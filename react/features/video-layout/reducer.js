@@ -9,7 +9,16 @@ import {
 } from './actionTypes';
 
 const DEFAULT_STATE = {
-    screenShares: []
+    screenShares: [],
+
+    /**
+     * The indicator which determines whether the video layout should display
+     * video thumbnails in a tiled layout.
+     *
+     * @public
+     * @type {boolean}
+     */
+    tileViewEnabled: false
 };
 
 const STORE_NAME = 'features/video-layout';
