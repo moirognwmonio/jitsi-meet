@@ -25,6 +25,17 @@ function getNewAudioOutputDevice(newDevices) {
             d.deviceId === selectedAudioOutputDeviceId)) {
         return 'default';
     }
+
+    const settings = APP.store.getState()['features/base/settings'];
+    const preferredAudioOutputDeviceId = settings.userSelectedAudioOutputDeviceId;
+
+    // if the preferred one is not the selected and is available in the new devices
+    // we want to use it as it was just added
+    if (preferredAudioOutputDeviceId
+        && preferredAudioOutputDeviceId !== selectedAudioOutputDeviceId
+        && availableAudioOutputDevices.find(d => d.deviceId === preferredAudioOutputDeviceId)) {
+        return preferredAudioOutputDeviceId;
+    }
 }
 
 /**
@@ -39,7 +50,7 @@ function getNewAudioInputDevice(newDevices, localAudio) {
     const availableAudioInputDevices = newDevices.filter(
         d => d.kind === 'audioinput');
     const settings = APP.store.getState()['features/base/settings'];
-    const selectedAudioInputDeviceId = settings.micDeviceId;
+    const selectedAudioInputDeviceId = settings.userSelectedMicDeviceId;
     const selectedAudioInputDevice = availableAudioInputDevices.find(
         d => d.deviceId === selectedAudioInputDeviceId);
 
@@ -78,7 +89,7 @@ function getNewVideoInputDevice(newDevices, localVideo) {
     const availableVideoInputDevices = newDevices.filter(
         d => d.kind === 'videoinput');
     const settings = APP.store.getState()['features/base/settings'];
-    const selectedVideoInputDeviceId = settings.cameraDeviceId;
+    const selectedVideoInputDeviceId = settings.userSelectedCameraDeviceId;
     const selectedVideoInputDevice = availableVideoInputDevices.find(
         d => d.deviceId === selectedVideoInputDeviceId);
 

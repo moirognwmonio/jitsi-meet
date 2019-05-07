@@ -112,7 +112,7 @@ export function submitDeviceSelectionTab(newState) {
             && newState.selectedVideoInputId
                 !== currentState.selectedVideoInputId) {
             dispatch(updateSettings({
-                cameraDeviceId: newState.selectedVideoInputId
+                userSelectedCameraDeviceId: newState.selectedVideoInputId
             }));
 
             dispatch(
@@ -123,7 +123,7 @@ export function submitDeviceSelectionTab(newState) {
                 && newState.selectedAudioInputId
                   !== currentState.selectedAudioInputId) {
             dispatch(updateSettings({
-                micDeviceId: newState.selectedAudioInputId
+                userSelectedMicDeviceId: newState.selectedAudioInputId
             }));
 
             dispatch(
@@ -137,7 +137,8 @@ export function submitDeviceSelectionTab(newState) {
 
             setAudioOutputDeviceId(
                 newState.selectedAudioOutputId,
-                dispatch)
+                dispatch,
+                true)
                 .then(() => logger.log('changed audio output device'))
                 .catch(err => {
                     logger.warn(

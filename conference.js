@@ -49,6 +49,7 @@ import {
     setDesktopSharingEnabled
 } from './react/features/base/conference';
 import {
+    checkAndNotifyForNewDevice,
     getAvailableDevices,
     setAudioOutputDeviceId,
     updateDeviceList
@@ -437,8 +438,8 @@ class ConferenceConnector {
                     hasRead: true,
                     error: code,
                     message: msg,
-                    timestamp: Date.now(),
-                    type: 'error'
+                    messageType: 'error',
+                    timestamp: Date.now()
                 }));
             }
             break;
@@ -2094,9 +2095,7 @@ export default {
                 })
                 .then(() => {
                     logger.log('switched local video device');
-                    APP.store.dispatch(updateSettings({
-                        cameraDeviceId
-                    }));
+                    this._updateVideoDeviceId();
                 })
                 .catch(err => {
                     APP.UI.showCameraErrorNotification(err);
@@ -2125,12 +2124,11 @@ export default {
 
                     return stream;
                 })
-                .then(stream => {
-                    this.useAudioStream(stream);
+                .then(stream => this.useAudioStream(stream))
+                .then(() => {
                     logger.log('switched local audio device');
-                    APP.store.dispatch(updateSettings({
-                        micDeviceId
-                    }));
+
+                    this._updateAudioDeviceId();
                 })
                 .catch(err => {
                     APP.UI.showMicErrorNotification(err);
@@ -2301,24 +2299,42 @@ export default {
                     // Ugly way to synchronize real device IDs with local
                     // storage and settings menu. This is a workaround until
                     // getConstraints() method will be implemented in browsers.
-                    if (this.localAudio) {
-                        dispatch(updateSettings({
-                            micDeviceId: this.localAudio.getDeviceId()
-                        }));
-                    }
+                    this._updateAudioDeviceId();
 
-                    if (this.localVideo
-                        && this.localVideo.videoType === 'camera') {
-                        dispatch(updateSettings({
-                            cameraDeviceId: this.localVideo.getDeviceId()
-                        }));
-                    }
+                    this._updateVideoDeviceId();
 
                     APP.UI.onAvailableDevicesChanged(devices);
                 });
         }
 
         return Promise.resolve();
+    },
+
+    /**
+     * Updates the settings for the currently used video device, extracting
+     * the device id from the used track.
+     * @private
+     */
+    _updateVideoDeviceId() {
+        if (this.localVideo
+            && this.localVideo.videoType === 'camera') {
+            APP.store.dispatch(updateSettings({
+                cameraDeviceId: this.localVideo.getDeviceId()
+            }));
+        }
+    },
+
+    /**
+     * Updates the settings for the currently used audio device, extracting
+     * the device id from the used track.
+     * @private
+     */
+    _updateAudioDeviceId() {
+        if (this.localAudio) {
+            APP.store.dispatch(updateSettings({
+                micDeviceId: this.localAudio.getDeviceId()
+            }));
+        }
     },
 
     /**
@@ -2329,6 +2345,8 @@ export default {
      * @returns {Promise}
      */
     _onDeviceListChanged(devices) {
+        const oldDevices = APP.store.getState()['features/base/devices'].availableDevices;
+
         APP.store.dispatch(updateDeviceList(devices));
 
         const newDevices
@@ -2367,6 +2385,25 @@ export default {
             this.localVideo.stopStream();
         }
 
+        // Let's handle unknown/non-preferred devices
+        const newAvailDevices
+            = APP.store.getState()['features/base/devices'].availableDevices;
+
+        if (typeof newDevices.audiooutput === 'undefined') {
+            APP.store.dispatch(
+                checkAndNotifyForNewDevice(newAvailDevices.audioOutput, oldDevices.audioOutput));
+        }
+
+        if (!requestedInput.audio) {
+            APP.store.dispatch(
+                checkAndNotifyForNewDevice(newAvailDevices.audioInput, oldDevices.audioInput));
+        }
+
+        if (!requestedInput.video) {
+            APP.store.dispatch(
+                checkAndNotifyForNewDevice(newAvailDevices.videoInput, oldDevices.videoInput));
+        }
+
         promises.push(
             mediaDeviceHelper.createLocalTracksAfterDeviceListChanged(
                     createLocalTracksF,
@@ -2394,7 +2431,12 @@ export default {
                                             : this.useVideoStream.bind(this);
 
                                     // Use the new stream or null if we failed to obtain it.
-                                    return useStream(tracks.find(track => track.getType() === mediaType) || null);
+                                    return useStream(tracks.find(track => track.getType() === mediaType) || null)
+                                        .then(() => {
+                                            mediaType === 'audio'
+                                                ? this._updateAudioDeviceId()
+                                                : this._updateVideoDeviceId();
+                                        });
                                 }
 
                                 return Promise.resolve();
