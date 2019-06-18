@@ -8,7 +8,10 @@ import { getInviteURL } from '../../../../base/connection';
 import { Dialog } from '../../../../base/dialog';
 import { translate } from '../../../../base/i18n';
 import { connect } from '../../../../base/redux';
-import { isLocalParticipantModerator } from '../../../../base/participants';
+import {
+    isLocalParticipantModerator,
+    getLocalParticipant
+} from '../../../../base/participants';
 
 import { _getDefaultPhoneNumber, getDialInfoPageURL } from '../../../functions';
 import DialInNumber from './DialInNumber';
@@ -38,9 +41,19 @@ type Props = {
     _conferenceName: string,
 
     /**
+     * The number of digits to be used in the password.
+     */
+    _passwordNumberOfDigits: ?number,
+
+    /**
      * The current url of the conference to be copied onto the clipboard.
      */
     _inviteURL: string,
+
+    /**
+     * The redux representation of the local participant.
+     */
+    _localParticipant: Object,
 
     /**
      * The current location url of the conference.
@@ -237,7 +250,8 @@ class InfoDialog extends Component<Props, State> {
                             editEnabled = { this.state.passwordEditEnabled }
                             locked = { this.props._locked }
                             onSubmit = { this._onPasswordSubmit }
-                            password = { this.props._password } />
+                            password = { this.props._password }
+                            passwordNumberOfDigits = { this.props._passwordNumberOfDigits } />
                     </div>
                     <div className = 'info-dialog-action-links'>
                         <div className = 'info-dialog-action-link'>
@@ -293,16 +307,15 @@ class InfoDialog extends Component<Props, State> {
      * @returns {string}
      */
     _getTextToCopy() {
-        const { liveStreamViewURL, t } = this.props;
+        const { _localParticipant, liveStreamViewURL, t } = this.props;
         const shouldDisplayDialIn = this._shouldDisplayDialIn();
-        const moreInfo
-            = shouldDisplayDialIn
-                ? t('info.inviteURLMoreInfo', { conferenceID: this.props.dialIn.conferenceID })
-                : '';
 
-        let invite = t('info.inviteURL', {
-            url: this.props._inviteURL,
-            moreInfo
+        let invite = _localParticipant && _localParticipant.name
+            ? t('info.inviteURLFirstPartPersonal', { name: _localParticipant.name })
+            : t('info.inviteURLFirstPartGeneral');
+
+        invite += t('info.inviteURLSecondPart', {
+            url: this.props._inviteURL
         });
 
         if (liveStreamViewURL) {
@@ -319,7 +332,8 @@ class InfoDialog extends Component<Props, State> {
                 conferenceID: this.props.dialIn.conferenceID
             });
             const moreNumbers = t('info.invitePhoneAlternatives', {
-                url: this._getDialInfoPageURL()
+                url: this._getDialInfoPageURL(),
+                silentUrl: `${this.props._inviteURL}#config.startSilent=true`
             });
 
             invite = `${invite}\n${dial}\n${moreNumbers}`;
@@ -576,10 +590,12 @@ function _mapStateToProps(state) {
     } = state['features/base/conference'];
 
     return {
-        _canEditPassword: isLocalParticipantModerator(state),
+        _canEditPassword: isLocalParticipantModerator(state, state['features/base/config'].lockRoomGuestEnabled),
         _conference: conference,
         _conferenceName: room,
+        _passwordNumberOfDigits: state['features/base/config'].roomPasswordNumberOfDigits,
         _inviteURL: getInviteURL(state),
+        _localParticipant: getLocalParticipant(state),
         _locationURL: state['features/base/connection'].locationURL,
         _locked: locked,
         _password: password

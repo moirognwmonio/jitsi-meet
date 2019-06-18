@@ -17,12 +17,17 @@
 
 #include <mach/mach_time.h>
 
-#import <React/RCTRootView.h>
-
 #import "JitsiMeet+Private.h"
 #import "JitsiMeetConferenceOptions+Private.h"
 #import "JitsiMeetView+Private.h"
 #import "ReactUtils.h"
+#import "RNRootView.h"
+
+
+/**
+ * Backwards compatibility: turn the boolean prop into a feature flag.
+ */
+static NSString *const PiPEnabledFeatureFlag = @"pip.enabled";
 
 
 @implementation JitsiMeetView {
@@ -36,7 +41,7 @@
     /**
      * React Native view where the entire content will be rendered.
      */
-    RCTRootView *rootView;
+    RNRootView *rootView;
 }
 
 /**
@@ -123,11 +128,15 @@ static void initializeViewsMap() {
 - (void)setProps:(NSDictionary *_Nonnull)newProps {
     NSMutableDictionary *props = mergeProps([[JitsiMeet sharedInstance] getDefaultProps], newProps);
 
-    props[@"externalAPIScope"] = externalAPIScope;
+    // Set the PiP flag if it wasn't manually set.
+    NSMutableDictionary *featureFlags = props[@"flags"];
+    if (featureFlags[PiPEnabledFeatureFlag] == nil) {
+        featureFlags[PiPEnabledFeatureFlag]
+            = [NSNumber numberWithBool:
+               self.delegate && [self.delegate respondsToSelector:@selector(enterPictureInPicture:)]];
+    }
 
-    // TODO: put this in some 'flags' field
-    props[@"pictureInPictureEnabled"]
-        = @(self.delegate && [self.delegate respondsToSelector:@selector(enterPictureInPicture:)]);
+    props[@"externalAPIScope"] = externalAPIScope;
 
     // This method is supposed to be imperative i.e. a second
     // invocation with one and the same URL is expected to join the respective
@@ -145,9 +154,9 @@ static void initializeViewsMap() {
     } else {
         RCTBridge *bridge = [[JitsiMeet sharedInstance] getReactBridge];
         rootView
-            = [[RCTRootView alloc] initWithBridge:bridge
-                                       moduleName:@"App"
-                                initialProperties:props];
+            = [[RNRootView alloc] initWithBridge:bridge
+                                      moduleName:@"App"
+                               initialProperties:props];
         rootView.backgroundColor = self.backgroundColor;
 
         // Add rootView as a subview which completely covers this one.

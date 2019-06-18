@@ -1,6 +1,15 @@
 /* global APP, JitsiMeetJS */
 
-import { getAudioOutputDeviceId } from '../../react/features/base/devices';
+import {
+    getAudioOutputDeviceId,
+    notifyCameraError,
+    notifyMicError
+} from '../../react/features/base/devices';
+import {
+    getUserSelectedCameraDeviceId,
+    getUserSelectedMicDeviceId,
+    getUserSelectedOutputDeviceId
+} from '../../react/features/base/settings';
 
 /**
  * Determines if currently selected audio output device should be changed after
@@ -26,8 +35,7 @@ function getNewAudioOutputDevice(newDevices) {
         return 'default';
     }
 
-    const settings = APP.store.getState()['features/base/settings'];
-    const preferredAudioOutputDeviceId = settings.userSelectedAudioOutputDeviceId;
+    const preferredAudioOutputDeviceId = getUserSelectedOutputDeviceId(APP.store.getState());
 
     // if the preferred one is not the selected and is available in the new devices
     // we want to use it as it was just added
@@ -49,8 +57,7 @@ function getNewAudioOutputDevice(newDevices) {
 function getNewAudioInputDevice(newDevices, localAudio) {
     const availableAudioInputDevices = newDevices.filter(
         d => d.kind === 'audioinput');
-    const settings = APP.store.getState()['features/base/settings'];
-    const selectedAudioInputDeviceId = settings.userSelectedMicDeviceId;
+    const selectedAudioInputDeviceId = getUserSelectedMicDeviceId(APP.store.getState());
     const selectedAudioInputDevice = availableAudioInputDevices.find(
         d => d.deviceId === selectedAudioInputDeviceId);
 
@@ -88,8 +95,7 @@ function getNewAudioInputDevice(newDevices, localAudio) {
 function getNewVideoInputDevice(newDevices, localVideo) {
     const availableVideoInputDevices = newDevices.filter(
         d => d.kind === 'videoinput');
-    const settings = APP.store.getState()['features/base/settings'];
-    const selectedVideoInputDeviceId = settings.userSelectedCameraDeviceId;
+    const selectedVideoInputDeviceId = getUserSelectedCameraDeviceId(APP.store.getState());
     const selectedVideoInputDevice = availableVideoInputDevices.find(
         d => d.deviceId === selectedVideoInputDeviceId);
 
@@ -174,11 +180,11 @@ export default {
                 ]))
                 .then(tracks => {
                     if (audioTrackError) {
-                        APP.UI.showMicErrorNotification(audioTrackError);
+                        APP.store.dispatch(notifyMicError(audioTrackError));
                     }
 
                     if (videoTrackError) {
-                        APP.UI.showCameraErrorNotification(videoTrackError);
+                        APP.store.dispatch(notifyCameraError(videoTrackError));
                     }
 
                     return tracks.filter(t => typeof t !== 'undefined');
@@ -203,7 +209,7 @@ export default {
                 })
                 .catch(err => {
                     audioTrackError = err;
-                    showError && APP.UI.showMicErrorNotification(err);
+                    showError && APP.store.disptach(notifyMicError(err));
 
                     return [];
                 }));
@@ -221,7 +227,7 @@ export default {
                 })
                 .catch(err => {
                     videoTrackError = err;
-                    showError && APP.UI.showCameraErrorNotification(err);
+                    showError && APP.store.dispatch(notifyCameraError(err));
 
                     return [];
                 }));

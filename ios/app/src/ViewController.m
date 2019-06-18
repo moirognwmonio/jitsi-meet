@@ -42,11 +42,11 @@
 
 - (void)_onJitsiMeetViewDelegateEvent:(NSString *)name
                              withData:(NSDictionary *)data {
-#if DEBUG
     NSLog(
         @"[%s:%d] JitsiMeetViewDelegate %@ %@",
         __FILE__, __LINE__, name, data);
 
+#if DEBUG
     NSAssert(
         [NSThread isMainThread],
         @"JitsiMeetViewDelegate %@ method invoked on a non-main thread",
@@ -95,5 +95,11 @@
 - (void)conferenceWillJoin:(NSDictionary *)data {
     [self _onJitsiMeetViewDelegateEvent:@"CONFERENCE_WILL_JOIN" withData:data];
 }
+
+#if 0
+- (void)enterPictureInPicture:(NSDictionary *)data {
+    [self _onJitsiMeetViewDelegateEvent:@"ENTER_PICTURE_IN_PICTURE" withData:data];
+}
+#endif
 
 @end

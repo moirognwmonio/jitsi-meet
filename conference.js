@@ -16,6 +16,7 @@ import * as JitsiMeetConferenceEvents from './ConferenceEvents';
 
 import {
     createDeviceChangedEvent,
+    createStartSilentEvent,
     createScreenSharingEvent,
     createStreamSwitchDelayEvent,
     createTrackMutedEvent,
@@ -51,6 +52,8 @@ import {
 import {
     checkAndNotifyForNewDevice,
     getAvailableDevices,
+    notifyCameraError,
+    notifyMicError,
     setAudioOutputDeviceId,
     updateDeviceList
 } from './react/features/base/devices';
@@ -83,6 +86,8 @@ import {
     localParticipantConnectionStatusChanged,
     localParticipantRoleChanged,
     participantConnectionStatusChanged,
+    participantKicked,
+    participantMutedUs,
     participantPresenceChanged,
     participantRoleChanged,
     participantUpdated
@@ -100,6 +105,7 @@ import {
     getLocationContextRoot,
     getJitsiMeetGlobalNS
 } from './react/features/base/util';
+import { notifyKickedOut } from './react/features/conference';
 import { addMessage } from './react/features/chat';
 import { showDesktopPicker } from './react/features/desktop-picker';
 import { appendSuffix } from './react/features/display-name';
@@ -486,10 +492,13 @@ class ConferenceConnector {
  * call in hangup() to resolve when all operations are finished.
  */
 function disconnect() {
-    connection.disconnect();
-    APP.API.notifyConferenceLeft(APP.conference.roomName);
+    const onDisconnected = () => {
+        APP.API.notifyConferenceLeft(APP.conference.roomName);
 
-    return Promise.resolve();
+        return Promise.resolve();
+    };
+
+    return connection.disconnect().then(onDisconnected, onDisconnected);
 }
 
 /**
@@ -694,13 +703,14 @@ export default {
                         // If both requests for 'audio' + 'video' and 'audio'
                         // only failed, we assume that there are some problems
                         // with user's microphone and show corresponding dialog.
-                        APP.UI.showMicErrorNotification(audioOnlyError);
-                        APP.UI.showCameraErrorNotification(videoOnlyError);
+                        APP.store.dispatch(notifyMicError(audioOnlyError));
+                        APP.store.dispatch(notifyCameraError(videoOnlyError));
                     } else {
                         // If request for 'audio' + 'video' failed, but request
                         // for 'audio' only was OK, we assume that we had
                         // problems with camera and show corresponding dialog.
-                        APP.UI.showCameraErrorNotification(audioAndVideoError);
+                        APP.store.dispatch(
+                            notifyCameraError(audioAndVideoError));
                     }
                 }
 
@@ -718,13 +728,22 @@ export default {
         this.roomName = options.roomName;
 
         return (
-            this.createInitialLocalTracksAndConnect(
+
+            // Initialize the device list first. This way, when creating tracks
+            // based on preferred devices, loose label matching can be done in
+            // cases where the exact ID match is no longer available, such as
+            // when the camera device has switched USB ports.
+            // when in startSilent mode we want to start with audio muted
+            this._initDeviceList()
+                .catch(error => logger.warn(
+                    'initial device list initialization failed', error))
+                .then(() => this.createInitialLocalTracksAndConnect(
                 options.roomName, {
                     startAudioOnly: config.startAudioOnly,
                     startScreenSharing: config.startScreenSharing,
-                    startWithAudioMuted: config.startWithAudioMuted,
+                    startWithAudioMuted: config.startWithAudioMuted || config.startSilent,
                     startWithVideoMuted: config.startWithVideoMuted
-                })
+                }))
             .then(([ tracks, con ]) => {
                 tracks.forEach(track => {
                     if ((track.isAudioTrack() && this.isLocalAudioMuted())
@@ -769,10 +788,21 @@ export default {
                     this.setVideoMuteStatus(true);
                 }
 
-                this._initDeviceList();
+                // Initialize device list a second time to ensure device labels
+                // get populated in case of an initial gUM acceptance; otherwise
+                // they may remain as empty strings.
+                this._initDeviceList(true);
 
                 if (config.iAmRecorder) {
                     this.recorder = new Recorder();
+                }
+
+                if (config.startSilent) {
+                    sendAnalytics(createStartSilentEvent());
+                    APP.store.dispatch(showNotification({
+                        descriptionKey: 'notify.startSilentDescription',
+                        titleKey: 'notify.startSilentTitle'
+                    }));
                 }
 
                 // XXX The API will take care of disconnecting from the XMPP
@@ -828,7 +858,7 @@ export default {
 
         if (!this.localAudio && !mute) {
             const maybeShowErrorDialog = error => {
-                showUI && APP.UI.showMicErrorNotification(error);
+                showUI && APP.store.dispatch(notifyMicError(error));
             };
 
             createLocalTracksF({ devices: [ 'audio' ] }, false)
@@ -891,7 +921,7 @@ export default {
 
         if (!this.localVideo && !mute) {
             const maybeShowErrorDialog = error => {
-                showUI && APP.UI.showCameraErrorNotification(error);
+                showUI && APP.store.dispatch(notifyCameraError(error));
             };
 
             // Try to create local video if there wasn't any.
@@ -1831,6 +1861,12 @@ export default {
             APP.UI.setAudioLevel(id, newLvl);
         });
 
+        room.on(JitsiConferenceEvents.TRACK_MUTE_CHANGED, (_, participantThatMutedUs) => {
+            if (participantThatMutedUs) {
+                APP.store.dispatch(participantMutedUs(participantThatMutedUs));
+            }
+        });
+
         room.on(JitsiConferenceEvents.TALK_WHILE_MUTED, () => {
             APP.UI.showToolbar(6000);
         });
@@ -1931,11 +1967,15 @@ export default {
                 }
             });
 
-        room.on(JitsiConferenceEvents.KICKED, () => {
+        room.on(JitsiConferenceEvents.KICKED, participant => {
             APP.UI.hideStats();
-            APP.UI.notifyKicked();
+            APP.store.dispatch(notifyKickedOut(participant));
 
             // FIXME close
+        });
+
+        room.on(JitsiConferenceEvents.PARTICIPANT_KICKED, (kicker, kicked) => {
+            APP.store.dispatch(participantKicked(kicker, kicked));
         });
 
         room.on(JitsiConferenceEvents.SUSPEND_DETECTED, () => {
@@ -2098,7 +2138,7 @@ export default {
                     this._updateVideoDeviceId();
                 })
                 .catch(err => {
-                    APP.UI.showCameraErrorNotification(err);
+                    APP.store.dispatch(notifyCameraError(err));
                 });
             }
         );
@@ -2131,7 +2171,7 @@ export default {
                     this._updateAudioDeviceId();
                 })
                 .catch(err => {
-                    APP.UI.showMicErrorNotification(err);
+                    APP.store.dispatch(notifyMicError(err));
                 });
             }
         );
@@ -2233,7 +2273,8 @@ export default {
         APP.keyboardshortcut.init();
 
         if (config.requireDisplayName
-                && !APP.conference.getLocalDisplayName()) {
+                && !APP.conference.getLocalDisplayName()
+                && !this._room.isHidden()) {
             APP.UI.promptDisplayName();
         }
 
@@ -2277,20 +2318,23 @@ export default {
     },
 
     /**
-     * Inits list of current devices and event listener for device change.
+     * Updates the list of current devices.
+     * @param {boolean} setDeviceListChangeHandler - Whether to add the deviceList change handlers.
      * @private
      * @returns {Promise}
      */
-    _initDeviceList() {
+    _initDeviceList(setDeviceListChangeHandler = false) {
         const { mediaDevices } = JitsiMeetJS;
 
         if (mediaDevices.isDeviceListAvailable()
                 && mediaDevices.isDeviceChangeAvailable()) {
-            this.deviceChangeListener = devices =>
-                window.setTimeout(() => this._onDeviceListChanged(devices), 0);
-            mediaDevices.addEventListener(
-                JitsiMediaDevicesEvents.DEVICE_LIST_CHANGED,
-                this.deviceChangeListener);
+            if (setDeviceListChangeHandler) {
+                this.deviceChangeListener = devices =>
+                    window.setTimeout(() => this._onDeviceListChanged(devices), 0);
+                mediaDevices.addEventListener(
+                    JitsiMediaDevicesEvents.DEVICE_LIST_CHANGED,
+                    this.deviceChangeListener);
+            }
 
             const { dispatch } = APP.store;
 
@@ -2388,17 +2432,26 @@ export default {
         // Let's handle unknown/non-preferred devices
         const newAvailDevices
             = APP.store.getState()['features/base/devices'].availableDevices;
+        let newAudioDevices = [];
+        let oldAudioDevices = [];
 
         if (typeof newDevices.audiooutput === 'undefined') {
-            APP.store.dispatch(
-                checkAndNotifyForNewDevice(newAvailDevices.audioOutput, oldDevices.audioOutput));
+            newAudioDevices = newAvailDevices.audioOutput;
+            oldAudioDevices = oldDevices.audioOutput;
         }
 
         if (!requestedInput.audio) {
-            APP.store.dispatch(
-                checkAndNotifyForNewDevice(newAvailDevices.audioInput, oldDevices.audioInput));
+            newAudioDevices = newAudioDevices.concat(newAvailDevices.audioInput);
+            oldAudioDevices = oldAudioDevices.concat(oldDevices.audioInput);
         }
 
+        // check for audio
+        if (newAudioDevices.length > 0) {
+            APP.store.dispatch(
+                checkAndNotifyForNewDevice(newAudioDevices, oldAudioDevices));
+        }
+
+        // check for video
         if (!requestedInput.video) {
             APP.store.dispatch(
                 checkAndNotifyForNewDevice(newAvailDevices.videoInput, oldDevices.videoInput));
@@ -2577,8 +2630,7 @@ export default {
     leaveRoomAndDisconnect() {
         APP.store.dispatch(conferenceWillLeave(room));
 
-        return room.leave()
-            .then(disconnect, disconnect);
+        return room.leave().then(disconnect, disconnect);
     },
 
     /**

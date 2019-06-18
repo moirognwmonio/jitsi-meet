@@ -66,7 +66,7 @@ class ReactInstanceManagerHolder {
         }
 
         try {
-            Class<?> amplitudeModuleClass = Class.forName("AmplitudeModule");
+            Class<?> amplitudeModuleClass = Class.forName("org.jitsi.meet.sdk.AmplitudeModule");
             Constructor constructor = amplitudeModuleClass.getConstructor(ReactApplicationContext.class);
             nativeModules.add((NativeModule)constructor.newInstance(reactContext));
         } catch (Exception e) {
@@ -147,6 +147,8 @@ class ReactInstanceManagerHolder {
                 new com.oblador.vectoricons.VectorIconsPackage(),
                 new com.ocetnik.timer.BackgroundTimerPackage(),
                 new com.oney.WebRTCModule.WebRTCModulePackage(),
+                new com.reactnativecommunity.asyncstorage.AsyncStoragePackage(),
+                new com.reactnativecommunity.webview.RNCWebViewPackage(),
                 new com.rnimmersive.RNImmersivePackage(),
                 new com.zmxv.RNSound.RNSoundPackage(),
                 new ReactPackageAdapter() {

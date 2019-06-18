@@ -5,9 +5,10 @@ import {
     createApiEvent,
     sendAnalytics
 } from '../../react/features/analytics';
-import { setSubject } from '../../react/features/base/conference';
+import { setPassword, setSubject } from '../../react/features/base/conference';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import { invite } from '../../react/features/invite';
+import { toggleTileView } from '../../react/features/video-layout';
 import { getJitsiMeetTransport } from '../transport';
 
 import { API_ID } from './constants';
@@ -64,6 +65,28 @@ function initCommands() {
             sendAnalytics(createApiEvent('display.name.changed'));
             APP.conference.changeLocalDisplayName(displayName);
         },
+        'password': password => {
+            const { conference, passwordRequired }
+                = APP.store.getState()['features/base/conference'];
+
+            if (passwordRequired) {
+                sendAnalytics(createApiEvent('submit.password'));
+
+                APP.store.dispatch(setPassword(
+                    passwordRequired,
+                    passwordRequired.join,
+                    password
+                ));
+            } else {
+                sendAnalytics(createApiEvent('password.changed'));
+
+                APP.store.dispatch(setPassword(
+                    conference,
+                    conference.lock,
+                    password
+                ));
+            }
+        },
         'proxy-connection-event': event => {
             APP.conference.onProxyConnectionEvent(event);
         },
@@ -97,9 +120,14 @@ function initCommands() {
             sendAnalytics(createApiEvent('screen.sharing.toggled'));
             toggleScreenSharing();
         },
-        'video-hangup': () => {
+        'toggle-tile-view': () => {
+            sendAnalytics(createApiEvent('tile-view.toggled'));
+
+            APP.store.dispatch(toggleTileView());
+        },
+        'video-hangup': (showFeedbackDialog = true) => {
             sendAnalytics(createApiEvent('video.hangup'));
-            APP.conference.hangup(true);
+            APP.conference.hangup(showFeedbackDialog);
         },
         'email': email => {
             sendAnalytics(createApiEvent('email.changed'));
@@ -554,6 +582,38 @@ class API {
     }
 
     /**
+     * Notify external application of an unexpected camera-related error having
+     * occurred.
+     *
+     * @param {string} type - The type of the camera error.
+     * @param {string} message - Additional information about the error.
+     * @returns {void}
+     */
+    notifyOnCameraError(type: string, message: string) {
+        this._sendEvent({
+            name: 'camera-error',
+            type,
+            message
+        });
+    }
+
+    /**
+     * Notify external application of an unexpected mic-related error having
+     * occurred.
+     *
+     * @param {string} type - The type of the mic error.
+     * @param {string} message - Additional information about the error.
+     * @returns {void}
+     */
+    notifyOnMicError(type: string, message: string) {
+        this._sendEvent({
+            name: 'mic-error',
+            type,
+            message
+        });
+    }
+
+    /**
      * Notify external application (if API is enabled) that conference feedback
      * has been submitted. Intended to be used in conjunction with the
      * submit-feedback command to get notified if feedback was submitted.
@@ -590,6 +650,16 @@ class API {
     }
 
     /**
+     * Notify external application of the current meeting requiring a password
+     * to join.
+     *
+     * @returns {void}
+     */
+    notifyOnPasswordRequired() {
+        this._sendEvent({ name: 'password-required' });
+    }
+
+    /**
      * Notify external application (if API is enabled) that the screen sharing
      * has been turned on/off.
      *
@@ -619,6 +689,21 @@ class API {
         this._sendEvent({
             name: 'subject-change',
             subject
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that tile view has been
+     * entered or exited.
+     *
+     * @param {string} enabled - True if tile view is currently displayed, false
+     * otherwise.
+     * @returns {void}
+     */
+    notifyTileViewChanged(enabled: boolean) {
+        this._sendEvent({
+            name: 'tile-view-changed',
+            enabled
         });
     }
 

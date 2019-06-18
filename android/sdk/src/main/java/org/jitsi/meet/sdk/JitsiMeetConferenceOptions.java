@@ -41,6 +41,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
      */
     private String room;
     /**
+     * Conference subject.
+     */
+    private String subject;
+    /**
      * JWT token used for authentication.
      */
     private String token;
@@ -51,6 +55,11 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     private Bundle colorScheme;
 
     /**
+     * Feature flags. See: https://github.com/jitsi/jitsi-meet/blob/master/react/features/base/flags/constants.js
+     */
+    private Bundle featureFlags;
+
+    /**
      * Set to {@code true} to join the conference with audio / video muted or to start in audio
      * only mode respectively.
      */
@@ -59,10 +68,9 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     private Boolean videoMuted;
 
     /**
-     * Set to {@code true} to enable the welcome page. Typically SDK users won't need this enabled
-     * since the host application decides which meeting to join.
+     * USer information, to be used when no token is specified.
      */
-    private Boolean welcomePageEnabled;
+    private JitsiMeetUserInfo userInfo;
 
     /**
      * Class used to build the immutable {@link JitsiMeetConferenceOptions} object.
@@ -70,17 +78,20 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     public static class Builder {
         private URL serverURL;
         private String room;
+        private String subject;
         private String token;
 
         private Bundle colorScheme;
+        private Bundle featureFlags;
 
         private Boolean audioMuted;
         private Boolean audioOnly;
         private Boolean videoMuted;
 
-        private Boolean welcomePageEnabled;
+        private JitsiMeetUserInfo userInfo;
 
         public Builder() {
+            featureFlags = new Bundle();
         }
 
         /**\
@@ -101,6 +112,17 @@ public class JitsiMeetConferenceOptions implements Parcelable {
          */
         public Builder setRoom(String room) {
             this.room = room;
+
+            return this;
+        }
+
+        /**
+         * Sets the conference subject.
+         * @param subject - Subject for the conference.
+         * @return - The {@link Builder} object itself so the method calls can be chained.
+         */
+        public Builder setSubject(String subject) {
+            this.subject = subject;
 
             return this;
         }
@@ -170,7 +192,31 @@ public class JitsiMeetConferenceOptions implements Parcelable {
          * @return - The {@link Builder} object itself so the method calls can be chained.
          */
         public Builder setWelcomePageEnabled(boolean enabled) {
-            this.welcomePageEnabled = enabled;
+            this.featureFlags.putBoolean("welcomepage.enabled", enabled);
+
+            return this;
+        }
+
+        public Builder setFeatureFlag(String flag, boolean value) {
+            this.featureFlags.putBoolean(flag, value);
+
+            return this;
+        }
+
+        public Builder setFeatureFlag(String flag, String value) {
+            this.featureFlags.putString(flag, value);
+
+            return this;
+        }
+
+        public Builder setFeatureFlag(String flag, int value) {
+            this.featureFlags.putInt(flag, value);
+
+            return this;
+        }
+
+        public Builder setUserInfo(JitsiMeetUserInfo userInfo) {
+            this.userInfo = userInfo;
 
             return this;
         }
@@ -185,12 +231,14 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
             options.serverURL = this.serverURL;
             options.room = this.room;
+            options.subject = this.subject;
             options.token = this.token;
             options.colorScheme = this.colorScheme;
+            options.featureFlags = this.featureFlags;
             options.audioMuted = this.audioMuted;
             options.audioOnly = this.audioOnly;
             options.videoMuted = this.videoMuted;
-            options.welcomePageEnabled = this.welcomePageEnabled;
+            options.userInfo = this.userInfo;
 
             return options;
         }
@@ -201,31 +249,32 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
     private JitsiMeetConferenceOptions(Parcel in) {
         room = in.readString();
+        subject = in.readString();
         token = in.readString();
         colorScheme = in.readBundle();
+        featureFlags = in.readBundle();
+        userInfo = new JitsiMeetUserInfo(in.readBundle());
         byte tmpAudioMuted = in.readByte();
         audioMuted = tmpAudioMuted == 0 ? null : tmpAudioMuted == 1;
         byte tmpAudioOnly = in.readByte();
         audioOnly = tmpAudioOnly == 0 ? null : tmpAudioOnly == 1;
         byte tmpVideoMuted = in.readByte();
         videoMuted = tmpVideoMuted == 0 ? null : tmpVideoMuted == 1;
-        byte tmpWelcomePageEnabled = in.readByte();
-        welcomePageEnabled = tmpWelcomePageEnabled == 0 ? null : tmpWelcomePageEnabled == 1;
     }
 
     Bundle asProps() {
         Bundle props = new Bundle();
 
+        // Android always has the PiP flag set by default.
+        if (!featureFlags.containsKey("pip.enabled")) {
+            featureFlags.putBoolean("pip.enabled", true);
+        }
+
+        props.putBundle("flags", featureFlags);
+
         if (colorScheme != null) {
             props.putBundle("colorScheme", colorScheme);
         }
-
-        if (welcomePageEnabled != null) {
-            props.putBoolean("welcomePageEnabled", welcomePageEnabled);
-        }
-
-        // TODO: get rid of this.
-        props.putBoolean("pictureInPictureEnabled", true);
 
         Bundle config = new Bundle();
 
@@ -237,6 +286,9 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         }
         if (videoMuted != null) {
             config.putBoolean("startWithVideoMuted", videoMuted);
+        }
+        if (subject != null) {
+            config.putString("subject", subject);
         }
 
         Bundle urlProps = new Bundle();
@@ -255,6 +307,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
         if (token != null) {
             urlProps.putString("jwt", token);
+        }
+
+        if (token == null && userInfo != null) {
+            props.putBundle("userInfo", userInfo.asBundle());
         }
 
         urlProps.putBundle("config", config);
@@ -281,12 +337,14 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(room);
+        dest.writeString(subject);
         dest.writeString(token);
         dest.writeBundle(colorScheme);
+        dest.writeBundle(featureFlags);
+        dest.writeBundle(userInfo.asBundle());
         dest.writeByte((byte) (audioMuted == null ? 0 : audioMuted ? 1 : 2));
         dest.writeByte((byte) (audioOnly == null ? 0 : audioOnly ? 1 : 2));
         dest.writeByte((byte) (videoMuted == null ? 0 : videoMuted ? 1 : 2));
-        dest.writeByte((byte) (welcomePageEnabled == null ? 0 : welcomePageEnabled ? 1 : 2));
     }
 
     @Override

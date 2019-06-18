@@ -74,6 +74,7 @@ buck-out/
 # Build artifacts
 *.jsbundle
 *.framework
+android/app/debug
 android/app/release
 
 # precommit-hook

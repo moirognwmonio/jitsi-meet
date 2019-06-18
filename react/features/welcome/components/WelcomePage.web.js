@@ -119,7 +119,9 @@ class WelcomePage extends AbstractWelcomePage {
                 className = { `welcome ${showAdditionalContent
                     ? 'with-content' : 'without-content'}` }
                 id = 'welcome_page'>
-                <Watermarks />
+                <div className = 'welcome-watermark'>
+                    <Watermarks />
+                </div>
                 <div className = 'header'>
                     <div className = 'welcome-page-settings'>
                         <SettingsButton
@@ -223,11 +225,11 @@ class WelcomePage extends AbstractWelcomePage {
             return null;
         }
 
-        const { t } = this.props;
+        const { _calendarEnabled, t } = this.props;
 
         const tabs = [];
 
-        if (CalendarList) {
+        if (_calendarEnabled) {
             tabs.push({
                 label: t('welcomepage.calendar'),
                 content: <CalendarList />

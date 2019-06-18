@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     Alert,
     FlatList,
+    KeyboardAvoidingView,
     SafeAreaView,
     TextInput,
     TouchableOpacity,
@@ -16,10 +17,7 @@ import { Icon } from '../../../../base/font-icons';
 import { translate } from '../../../../base/i18n';
 import {
     AvatarListItem,
-    BackButton,
-    ForwardButton,
-    Header,
-    HeaderLabel,
+    HeaderWithNavigation,
     Modal,
     type Item
 } from '../../../../base/react';
@@ -146,43 +144,47 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
             <Modal
                 onRequestClose = { this._onCloseAddPeopleDialog }
                 visible = { this.props._isVisible }>
-                <Header>
-                    <BackButton onPress = { this._onCloseAddPeopleDialog } />
-                    <HeaderLabel labelKey = 'inviteDialog.header' />
-                    <ForwardButton
-                        disabled = { this._isAddDisabled() }
-                        labelKey = 'inviteDialog.send'
-                        onPress = { this._onInvite } />
-                </Header>
-                <SafeAreaView style = { styles.dialogWrapper }>
-                    <View
-                        style = { styles.searchFieldWrapper }>
-                        <View style = { styles.searchIconWrapper }>
-                            { this.state.searchInprogress
-                                ? <ActivityIndicator
-                                    color = { DARK_GREY }
-                                    size = 'small' />
-                                : <Icon
-                                    name = { 'search' }
-                                    style = { styles.searchIcon } />}
+                <HeaderWithNavigation
+                    forwardDisabled = { this._isAddDisabled() }
+                    forwardLabelKey = 'inviteDialog.send'
+                    headerLabelKey = 'inviteDialog.header'
+                    onPressBack = { this._onCloseAddPeopleDialog }
+                    onPressForward = { this._onInvite } />
+                <KeyboardAvoidingView
+                    behavior = 'padding'
+                    style = { styles.avoidingView }>
+                    <SafeAreaView style = { styles.dialogWrapper }>
+                        <View
+                            style = { styles.searchFieldWrapper }>
+                            <View style = { styles.searchIconWrapper }>
+                                { this.state.searchInprogress
+                                    ? <ActivityIndicator
+                                        color = { DARK_GREY }
+                                        size = 'small' />
+                                    : <Icon
+                                        name = { 'search' }
+                                        style = { styles.searchIcon } />}
+                            </View>
+                            <TextInput
+                                autoCorrect = { false }
+                                autoFocus = { true }
+                                onChangeText = { this._onTypeQuery }
+                                placeholder = {
+                                    this.props.t(`inviteDialog.${placeholderKey}`)
+                                }
+                                ref = { this._setFieldRef }
+                                style = { styles.searchField } />
                         </View>
-                        <TextInput
-                            autoCorrect = { false }
-                            onChangeText = { this._onTypeQuery }
-                            placeholder = {
-                                this.props.t(`inviteDialog.${placeholderKey}`)
-                            }
-                            ref = { this._setFieldRef }
-                            style = { styles.searchField } />
-                    </View>
-                    <FlatList
-                        ItemSeparatorComponent = { this._renderSeparator }
-                        data = { this.state.selectableItems }
-                        extraData = { inviteItems }
-                        keyExtractor = { this._keyExtractor }
-                        renderItem = { this._renderItem }
-                        style = { styles.resultList } />
-                </SafeAreaView>
+                        <FlatList
+                            ItemSeparatorComponent = { this._renderSeparator }
+                            data = { this.state.selectableItems }
+                            extraData = { inviteItems }
+                            keyExtractor = { this._keyExtractor }
+                            keyboardShouldPersistTaps = 'always'
+                            renderItem = { this._renderItem }
+                            style = { styles.resultList } />
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
             </Modal>
         );
     }
@@ -270,8 +272,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                 const items: Array<*> = inviteItems.concat(item);
 
                 this.setState({
-                    // $FlowExpectedError
-                    inviteItems: _.orderBy(items, [ 'name' ], [ 'asc' ])
+                    inviteItems: _.sortBy(items, [ 'name', 'number' ])
                 });
             }
         };
@@ -321,13 +322,10 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                 }
             });
 
-            const items = this.state.inviteItems.concat(selectableItems);
-
-            // $FlowExpectedError
-            selectableItems = _.orderBy(items, [ 'name' ], [ 'asc' ]);
+            selectableItems = _.sortBy(selectableItems, [ 'name', 'number' ]);
 
             this.setState({
-                selectableItems
+                selectableItems: this.state.inviteItems.concat(selectableItems)
             });
         })
         .finally(() => {

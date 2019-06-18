@@ -7,6 +7,7 @@ import { connect } from '../../base/redux';
 import type { Dispatch } from 'redux';
 
 import { createDeepLinkingPageEvent, sendAnalytics } from '../../analytics';
+import { isSupportedBrowser } from '../../base/environment';
 import { translate } from '../../base/i18n';
 
 import {
@@ -50,7 +51,6 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
         super(props);
 
         // Bind event handlers so they are only bound once per instance.
-        this._openDesktopApp = this._openDesktopApp.bind(this);
         this._onLaunchWeb = this._onLaunchWeb.bind(this);
         this._onTryAgain = this._onTryAgain.bind(this);
     }
@@ -61,7 +61,6 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
      * @inheritdoc
      */
     componentDidMount() {
-        this._openDesktopApp();
         sendAnalytics(
             createDeepLinkingPageEvent(
                 'displayed', 'DeepLinkingDesktop', { isMobileBrowser: false }));
@@ -109,8 +108,12 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
                                 </h1>
                                 <p className = 'description'>
                                     {
-                                        t(`${_TNS}.description`,
-                                            { app: NATIVE_APP_NAME })
+                                        t(
+                                            `${_TNS}.${isSupportedBrowser()
+                                                ? 'description'
+                                                : 'descriptionWithoutWeb'}`,
+                                            { app: NATIVE_APP_NAME }
+                                        )
                                     }
                                 </p>
                                 <div className = 'buttons'>
@@ -120,9 +123,12 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
                                             onClick = { this._onTryAgain }>
                                             { t(`${_TNS}.tryAgainButton`) }
                                         </Button>
-                                        <Button onClick = { this._onLaunchWeb }>
-                                            { t(`${_TNS}.launchWebButton`) }
-                                        </Button>
+                                        {
+                                            isSupportedBrowser()
+                                                && <Button onClick = { this._onLaunchWeb }>
+                                                    { t(`${_TNS}.launchWebButton`) }
+                                                </Button>
+                                        }
                                     </ButtonGroup>
                                 </div>
                             </div>
@@ -131,17 +137,6 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
                 </div>
             </AtlasKitThemeProvider>
         );
-    }
-
-    _openDesktopApp: () => {}
-
-    /**
-     * Dispatches the <tt>openDesktopApp</tt> action.
-     *
-     * @returns {void}
-     */
-    _openDesktopApp() {
-        this.props.dispatch(openDesktopApp());
     }
 
     _onTryAgain: () => {}
@@ -155,7 +150,7 @@ class DeepLinkingDesktopPage<P : Props> extends Component<P> {
         sendAnalytics(
             createDeepLinkingPageEvent(
                 'clicked', 'tryAgainButton', { isMobileBrowser: false }));
-        this._openDesktopApp();
+        this.props.dispatch(openDesktopApp());
     }
 
     _onLaunchWeb: () => {}
