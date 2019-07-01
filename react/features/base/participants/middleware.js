@@ -20,8 +20,7 @@ import {
     localParticipantJoined,
     localParticipantLeft,
     participantLeft,
-    participantUpdated,
-    showParticipantJoinedNotification
+    participantUpdated
 } from './actions';
 import {
     DOMINANT_SPEAKER_CHANGED,
@@ -117,12 +116,6 @@ MiddlewareRegistry.register(store => next => action => {
 
     case PARTICIPANT_JOINED: {
         _maybePlaySounds(store, action);
-
-        const { participant: { name } } = action;
-
-        if (name) {
-            store.dispatch(showParticipantJoinedNotification(name));
-        }
 
         return _participantJoinedOrUpdated(store, next, action);
     }

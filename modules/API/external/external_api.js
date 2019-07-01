@@ -73,6 +73,7 @@ const events = {
     'video-mute-status-changed': 'videoMuteStatusChanged',
     'screen-sharing-status-changed': 'screenSharingStatusChanged',
     'subject-change': 'subjectChange',
+    'suspend-detected': 'suspendDetected',
     'tile-view-changed': 'tileViewChanged'
 };
 
@@ -537,6 +538,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
      * {{
      * on: on //whether screen sharing is on
      * }}
+     * {@code suspendDetected} - receives event notifications about detecting suspend event in host computer.
      * {@code readyToClose} - all hangup operations are completed and Jitsi Meet
      * is ready to be disposed.
      * @returns {void}
@@ -559,7 +561,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
         this.emit('_willDispose');
         this._transport.dispose();
         this.removeAllListeners();
-        if (this._frame) {
+        if (this._frame && this._frame.parentNode) {
             this._frame.parentNode.removeChild(this._frame);
         }
     }

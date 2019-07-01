@@ -7,6 +7,7 @@ import {
     Alert,
     FlatList,
     KeyboardAvoidingView,
+    Platform,
     SafeAreaView,
     TextInput,
     TouchableOpacity,
@@ -52,6 +53,11 @@ type Props = AbstractProps & {
 type State = AbstractState & {
 
     /**
+     * State variable to keep track of the search field value.
+     */
+    fieldValue: string,
+
+    /**
      * True if a search is in progress, false otherwise.
      */
     searchInprogress: boolean,
@@ -73,6 +79,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
     defaultState = {
         addToCallError: false,
         addToCallInProgress: false,
+        fieldValue: '',
         inviteItems: [],
         searchInprogress: false,
         selectableItems: []
@@ -101,6 +108,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
         this._keyExtractor = this._keyExtractor.bind(this);
         this._renderItem = this._renderItem.bind(this);
         this._renderSeparator = this._renderSeparator.bind(this);
+        this._onClearField = this._onClearField.bind(this);
         this._onCloseAddPeopleDialog = this._onCloseAddPeopleDialog.bind(this);
         this._onInvite = this._onInvite.bind(this);
         this._onPressItem = this._onPressItem.bind(this);
@@ -168,12 +176,15 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                             <TextInput
                                 autoCorrect = { false }
                                 autoFocus = { true }
+                                clearButtonMode = 'always' // iOS only
                                 onChangeText = { this._onTypeQuery }
                                 placeholder = {
                                     this.props.t(`inviteDialog.${placeholderKey}`)
                                 }
                                 ref = { this._setFieldRef }
-                                style = { styles.searchField } />
+                                style = { styles.searchField }
+                                value = { this.state.fieldValue } />
+                            { this._renderAndroidClearButton() }
                         </View>
                         <FlatList
                             ItemSeparatorComponent = { this._renderSeparator }
@@ -212,7 +223,23 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
      * @returns {string}
      */
     _keyExtractor(item) {
-        return item.type === 'user' ? item.user_id : item.number;
+        return item.type === 'user' ? item.id || item.user_id : item.number;
+    }
+
+    _onClearField: () => void
+
+    /**
+     * Callback to clear the text field.
+     *
+     * @returns {void}
+     */
+    _onClearField() {
+        this.setState({
+            fieldValue: ''
+        });
+
+        // Clear search results
+        this._onTypeQuery('');
     }
 
     _onCloseAddPeopleDialog: () => void
@@ -288,6 +315,10 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
      * @returns {void}
      */
     _onTypeQuery(query) {
+        this.setState({
+            fieldValue: query
+        });
+
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
             this.setState({
@@ -315,8 +346,9 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                         && !inviteItems.find(
                             _.matchesProperty('number', result.number));
                 case 'user':
-                    return result.user_id && !inviteItems.find(
-                        _.matchesProperty('user_id', result.user_id));
+                    return !inviteItems.find(
+                        (result.user_id && _.matchesProperty('id', result.id))
+                        || (result.user_id && _.matchesProperty('user_id', result.user_id)));
                 default:
                     return false;
                 }
@@ -340,6 +372,31 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
     _query: (string) => Promise<Array<Object>>;
 
     _renderItem: Object => ?React$Element<*>
+
+    /**
+     * Renders a button to clear the text field on Android.
+     *
+     * NOTE: For the best platform experience we use the native solution on iOS.
+     *
+     * @returns {React#Element<*>}
+     */
+    _renderAndroidClearButton() {
+        if (Platform.OS !== 'android' || !this.state.fieldValue.length) {
+            return null;
+        }
+
+        return (
+            <TouchableOpacity
+                onPress = { this._onClearField }
+                style = { styles.clearButton }>
+                <View style = { styles.clearIconContainer }>
+                    <Icon
+                        name = 'close'
+                        style = { styles.clearIcon } />
+                </View>
+            </TouchableOpacity>
+        );
+    }
 
     /**
      * Renders a single item in the {@code FlatList}.
@@ -367,10 +424,12 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
             break;
         case 'user':
             selected
-                = inviteItems.find(_.matchesProperty('user_id', item.user_id));
+                = item.id
+                    ? inviteItems.find(_.matchesProperty('id', item.id))
+                    : inviteItems.find(_.matchesProperty('user_id', item.user_id));
             renderableItem = {
                 avatar: item.avatar,
-                key: item.user_id,
+                key: item.id || item.user_id,
                 title: item.name
             };
             break;

@@ -23,7 +23,8 @@ import {
     sendAnalytics
 } from './react/features/analytics';
 import {
-    redirectWithStoredParams,
+    maybeRedirectToWelcomePage,
+    redirectToStaticPage,
     reloadWithStoredParams
 } from './react/features/app';
 
@@ -43,6 +44,7 @@ import {
     conferenceWillJoin,
     conferenceWillLeave,
     dataChannelOpened,
+    kickedOut,
     lockStateChanged,
     onStartMutedPolicyChanged,
     p2pStatusChanged,
@@ -79,7 +81,6 @@ import {
 import { showNotification } from './react/features/notifications';
 import {
     dominantSpeakerChanged,
-    getAvatarURLByParticipantId,
     getLocalParticipant,
     getNormalizedDisplayName,
     getParticipantById,
@@ -101,11 +102,7 @@ import {
     trackAdded,
     trackRemoved
 } from './react/features/base/tracks';
-import {
-    getLocationContextRoot,
-    getJitsiMeetGlobalNS
-} from './react/features/base/util';
-import { notifyKickedOut } from './react/features/conference';
+import { getJitsiMeetGlobalNS } from './react/features/base/util';
 import { addMessage } from './react/features/chat';
 import { showDesktopPicker } from './react/features/desktop-picker';
 import { appendSuffix } from './react/features/display-name';
@@ -213,77 +210,6 @@ function muteLocalVideo(muted) {
 }
 
 /**
- * Check if the welcome page is enabled and redirects to it.
- * If requested show a thank you dialog before that.
- * If we have a close page enabled, redirect to it without
- * showing any other dialog.
- *
- * @param {object} options used to decide which particular close page to show
- * or if close page is disabled, whether we should show the thankyou dialog
- * @param {boolean} options.showThankYou - whether we should
- * show thank you dialog
- * @param {boolean} options.feedbackSubmitted - whether feedback was submitted
- */
-function maybeRedirectToWelcomePage(options) {
-    // if close page is enabled redirect to it, without further action
-    if (config.enableClosePage) {
-        const { isGuest } = APP.store.getState()['features/base/jwt'];
-
-        // save whether current user is guest or not, before navigating
-        // to close page
-        window.sessionStorage.setItem('guest', isGuest);
-        redirectToStaticPage(`static/${
-            options.feedbackSubmitted ? 'close.html' : 'close2.html'}`);
-
-        return;
-    }
-
-    // else: show thankYou dialog only if there is no feedback
-    if (options.showThankYou) {
-        APP.store.dispatch(showNotification({
-            titleArguments: { appName: interfaceConfig.APP_NAME },
-            titleKey: 'dialog.thankYou'
-        }));
-    }
-
-    // if Welcome page is enabled redirect to welcome page after 3 sec, if
-    // there is a thank you message to be shown, 0.5s otherwise.
-    if (config.enableWelcomePage) {
-        setTimeout(
-            () => {
-                APP.store.dispatch(redirectWithStoredParams('/'));
-            },
-            options.showThankYou ? 3000 : 500);
-    }
-}
-
-/**
- * Assigns a specific pathname to window.location.pathname taking into account
- * the context root of the Web app.
- *
- * @param {string} pathname - The pathname to assign to
- * window.location.pathname. If the specified pathname is relative, the context
- * root of the Web app will be prepended to the specified pathname before
- * assigning it to window.location.pathname.
- * @return {void}
- */
-function redirectToStaticPage(pathname) {
-    const windowLocation = window.location;
-    let newPathname = pathname;
-
-    if (!newPathname.startsWith('/')) {
-        // A pathname equal to ./ specifies the current directory. It will be
-        // fine but pointless to include it because contextRoot is the current
-        // directory.
-        newPathname.startsWith('./')
-            && (newPathname = newPathname.substring(2));
-        newPathname = getLocationContextRoot(windowLocation) + newPathname;
-    }
-
-    windowLocation.pathname = newPathname;
-}
-
-/**
  * A queue for the async replaceLocalTrack action so that multiple audio
  * replacements cannot happen simultaneously. This solves the issue where
  * replaceLocalTrack is called multiple times with an oldTrack of null, causing
@@ -348,7 +274,7 @@ class ConferenceConnector {
 
         case JitsiConferenceErrors.NOT_ALLOWED_ERROR: {
             // let's show some auth not allowed page
-            redirectToStaticPage('static/authError.html');
+            APP.store.dispatch(redirectToStaticPage('static/authError.html'));
             break;
         }
 
@@ -379,13 +305,6 @@ class ConferenceConnector {
             APP.UI.notifyGracefulShutdown();
             break;
 
-        case JitsiConferenceErrors.JINGLE_FATAL_ERROR: {
-            const [ error ] = params;
-
-            APP.UI.notifyInternalError(error);
-            break;
-        }
-
         case JitsiConferenceErrors.CONFERENCE_DESTROYED: {
             const [ reason ] = params;
 
@@ -407,6 +326,7 @@ class ConferenceConnector {
 
         case JitsiConferenceErrors.FOCUS_LEFT:
         case JitsiConferenceErrors.VIDEOBRIDGE_NOT_AVAILABLE:
+        case JitsiConferenceErrors.OFFER_ANSWER_FAILED:
             APP.store.dispatch(conferenceWillLeave(room));
 
             // FIXME the conference should be stopped by the library and not by
@@ -1788,11 +1708,6 @@ export default {
 
             logger.log(`USER ${id} LEFT:`, user);
             APP.API.notifyUserLeft(id);
-            APP.UI.messageHandler.participantNotification(
-                user.getDisplayName(),
-                'notify.somebody',
-                'disconnected',
-                'notify.disconnected');
             APP.UI.onSharedVideoStop(id);
         });
 
@@ -1969,7 +1884,7 @@ export default {
 
         room.on(JitsiConferenceEvents.KICKED, participant => {
             APP.UI.hideStats();
-            APP.store.dispatch(notifyKickedOut(participant));
+            APP.store.dispatch(kickedOut(room, participant));
 
             // FIXME close
         });
@@ -2005,6 +1920,8 @@ export default {
                 this.localAudio.dispose();
                 this.localAudio = null;
             }
+
+            APP.API.notifySuspendDetected();
         });
 
         APP.UI.addListener(UIEvents.AUDIO_MUTED, muted => {
@@ -2284,18 +2201,6 @@ export default {
             = APP.store.getState()['features/base/settings'].displayName;
 
         APP.UI.changeDisplayName('localVideoContainer', displayName);
-        APP.API.notifyConferenceJoined(
-            this.roomName,
-            this._room.myUserId(),
-            {
-                displayName,
-                formattedDisplayName: appendSuffix(
-                    displayName,
-                    interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME),
-                avatarURL: getAvatarURLByParticipantId(
-                    APP.store.getState(), this._room.myUserId())
-            }
-        );
     },
 
     /**
@@ -2618,7 +2523,7 @@ export default {
             room = undefined;
 
             APP.API.notifyReadyToClose();
-            maybeRedirectToWelcomePage(values[0]);
+            APP.store.dispatch(maybeRedirectToWelcomePage(values[0]));
         });
     },
 
@@ -2758,14 +2663,6 @@ export default {
         APP.store.dispatch(updateSettings({
             displayName: formattedNickname
         }));
-
-        APP.API.notifyDisplayNameChanged(id, {
-            displayName: formattedNickname,
-            formattedDisplayName:
-                appendSuffix(
-                    formattedNickname,
-                    interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME)
-        });
 
         if (room) {
             APP.UI.changeDisplayName(id, formattedNickname);
