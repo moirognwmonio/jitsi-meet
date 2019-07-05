@@ -78,7 +78,10 @@ import {
     setVideoAvailable,
     setVideoMuted
 } from './react/features/base/media';
-import { showNotification } from './react/features/notifications';
+import {
+    hideNotification,
+    showNotification
+} from './react/features/notifications';
 import {
     dominantSpeakerChanged,
     getLocalParticipant,
@@ -103,6 +106,7 @@ import {
     trackRemoved
 } from './react/features/base/tracks';
 import { getJitsiMeetGlobalNS } from './react/features/base/util';
+import { getBlurEffect } from './react/features/blur';
 import { addMessage } from './react/features/chat';
 import { showDesktopPicker } from './react/features/desktop-picker';
 import { appendSuffix } from './react/features/display-name';
@@ -556,48 +560,63 @@ export default {
             // Resolve with no tracks
             tryCreateLocalTracks = Promise.resolve([]);
         } else {
-            tryCreateLocalTracks = createLocalTracksF(
-                { devices: initialDevices }, true)
-                .catch(err => {
-                    if (requestedAudio && requestedVideo) {
+            const loadEffectsPromise = options.startWithBlurEnabled
+                ? getBlurEffect()
+                    .then(blurEffect => [ blurEffect ])
+                    .catch(error => {
+                        logger.error('Failed to obtain the blur effect instance with error: ', error);
 
-                        // Try audio only...
-                        audioAndVideoError = err;
+                        return Promise.resolve([]);
+                    })
+                : Promise.resolve([]);
 
-                        return (
-                            createLocalTracksF({ devices: [ 'audio' ] }, true));
-                    } else if (requestedAudio && !requestedVideo) {
+            tryCreateLocalTracks = loadEffectsPromise.then(trackEffects =>
+                createLocalTracksF(
+                    {
+                        devices: initialDevices,
+                        effects: trackEffects
+                    }, true)
+                    .catch(err => {
+                        if (requestedAudio && requestedVideo) {
+
+                            // Try audio only...
+                            audioAndVideoError = err;
+
+                            return (
+                                createLocalTracksF({ devices: [ 'audio' ] }, true));
+                        } else if (requestedAudio && !requestedVideo) {
+                            audioOnlyError = err;
+
+                            return [];
+                        } else if (requestedVideo && !requestedAudio) {
+                            videoOnlyError = err;
+
+                            return [];
+                        }
+                        logger.error('Should never happen');
+                    })
+                    .catch(err => {
+                        // Log this just in case...
+                        if (!requestedAudio) {
+                            logger.error('The impossible just happened', err);
+                        }
                         audioOnlyError = err;
 
-                        return [];
-                    } else if (requestedVideo && !requestedAudio) {
+                        // Try video only...
+                        return requestedVideo
+                            ? createLocalTracksF({ devices: [ 'video' ] }, true)
+                            : [];
+                    })
+                    .catch(err => {
+                        // Log this just in case...
+                        if (!requestedVideo) {
+                            logger.error('The impossible just happened', err);
+                        }
                         videoOnlyError = err;
 
                         return [];
-                    }
-                    logger.error('Should never happen');
-                })
-                .catch(err => {
-                    // Log this just in case...
-                    if (!requestedAudio) {
-                        logger.error('The impossible just happened', err);
-                    }
-                    audioOnlyError = err;
-
-                    // Try video only...
-                    return requestedVideo
-                        ? createLocalTracksF({ devices: [ 'video' ] }, true)
-                        : [];
-                })
-                .catch(err => {
-                    // Log this just in case...
-                    if (!requestedVideo) {
-                        logger.error('The impossible just happened', err);
-                    }
-                    videoOnlyError = err;
-
-                    return [];
-                });
+                    })
+            );
         }
 
         // Hide the permissions prompt/overlay as soon as the tracks are
@@ -659,6 +678,7 @@ export default {
                     'initial device list initialization failed', error))
                 .then(() => this.createInitialLocalTracksAndConnect(
                 options.roomName, {
+                    startWithBlurEnabled: APP.store.getState()['features/blur'].blurEnabled,
                     startAudioOnly: config.startAudioOnly,
                     startScreenSharing: config.startScreenSharing,
                     startWithAudioMuted: config.startWithAudioMuted || config.startSilent,
@@ -945,17 +965,15 @@ export default {
      * Returns the connection times stored in the library.
      */
     getConnectionTimes() {
-        return this._room.getConnectionTimes();
+        return room.getConnectionTimes();
     },
 
     // used by torture currently
     isJoined() {
-        return this._room
-            && this._room.isJoined();
+        return room && room.isJoined();
     },
     getConnectionState() {
-        return this._room
-            && this._room.getConnectionState();
+        return room && room.getConnectionState();
     },
 
     /**
@@ -964,8 +982,7 @@ export default {
      * P2P connection
      */
     getP2PConnectionState() {
-        return this._room
-            && this._room.getP2PConnectionState();
+        return room && room.getP2PConnectionState();
     },
 
     /**
@@ -974,7 +991,7 @@ export default {
      */
     _startP2P() {
         try {
-            this._room && this._room.startP2PSession();
+            room && room.startP2PSession();
         } catch (error) {
             logger.error('Start P2P failed', error);
             throw error;
@@ -987,7 +1004,7 @@ export default {
      */
     _stopP2P() {
         try {
-            this._room && this._room.stopP2PSession();
+            room && room.stopP2PSession();
         } catch (error) {
             logger.error('Stop P2P failed', error);
             throw error;
@@ -1002,7 +1019,7 @@ export default {
      * false otherwise.
      */
     isConnectionInterrupted() {
-        return this._room.isConnectionInterrupted();
+        return room.isConnectionInterrupted();
     },
 
     /**
@@ -1063,7 +1080,7 @@ export default {
     },
 
     getMyUserId() {
-        return this._room && this._room.myUserId();
+        return room && room.myUserId();
     },
 
     /**
@@ -1086,7 +1103,7 @@ export default {
      * least one track.
      */
     getNumberOfParticipantsWithTracks() {
-        return this._room.getParticipants()
+        return room.getParticipants()
             .filter(p => p.getTracks().length > 0)
             .length;
     },
@@ -1250,7 +1267,7 @@ export default {
                         this.localVideo = newStream;
                         this._setSharingScreen(newStream);
                         if (newStream) {
-                            APP.UI.addLocalStream(newStream);
+                            APP.UI.addLocalVideoStream(newStream);
                         }
                         this.setVideoMuteStatus(this.isLocalVideoMuted());
                     })
@@ -1301,9 +1318,6 @@ export default {
                 replaceLocalTrack(this.localAudio, newStream, room))
                     .then(() => {
                         this.localAudio = newStream;
-                        if (newStream) {
-                            APP.UI.addLocalStream(newStream);
-                        }
                         this.setAudioMuteStatus(this.isLocalAudioMuted());
                     })
                     .then(resolve)
@@ -1776,14 +1790,29 @@ export default {
             APP.UI.setAudioLevel(id, newLvl);
         });
 
-        room.on(JitsiConferenceEvents.TRACK_MUTE_CHANGED, (_, participantThatMutedUs) => {
+        // we store the last start muted notification id that we showed,
+        // so we can hide it when unmuted mic is detected
+        let lastNotificationId;
+
+        room.on(JitsiConferenceEvents.TRACK_MUTE_CHANGED, (track, participantThatMutedUs) => {
             if (participantThatMutedUs) {
                 APP.store.dispatch(participantMutedUs(participantThatMutedUs));
+            }
+
+            if (lastNotificationId && track.isAudioTrack() && track.isLocal() && !track.isMuted()) {
+                APP.store.dispatch(hideNotification(lastNotificationId));
+                lastNotificationId = undefined;
             }
         });
 
         room.on(JitsiConferenceEvents.TALK_WHILE_MUTED, () => {
-            APP.UI.showToolbar(6000);
+            const action = APP.store.dispatch(showNotification({
+                titleKey: 'toolbar.talkWhileMutedPopup',
+                customActionNameKey: 'notify.unmute',
+                customActionHandler: muteLocalAudio.bind(this, false)
+            }));
+
+            lastNotificationId = action.uid;
         });
         room.on(JitsiConferenceEvents.SUBJECT_CHANGED,
             subject => APP.store.dispatch(conferenceSubjectChanged(subject)));
@@ -2191,7 +2220,7 @@ export default {
 
         if (config.requireDisplayName
                 && !APP.conference.getLocalDisplayName()
-                && !this._room.isHidden()) {
+                && !room.isHidden()) {
             APP.UI.promptDisplayName();
         }
 
