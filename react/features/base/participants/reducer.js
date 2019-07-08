@@ -1,7 +1,5 @@
 // @flow
 
-import { randomHexString } from 'js-utils/random';
-
 import { ReducerRegistry, set } from '../redux';
 
 import {
@@ -183,12 +181,14 @@ function _participant(state: Object = {}, action) {
  */
 function _participantJoined({ participant }) {
     const {
+        avatarID,
         avatarURL,
         botType,
         connectionStatus,
         dominantSpeaker,
         email,
         isFakeParticipant,
+        isJigasi,
         loadableAvatarUrl,
         local,
         name,
@@ -196,14 +196,9 @@ function _participantJoined({ participant }) {
         presence,
         role
     } = participant;
-    let { avatarID, conference, id } = participant;
+    let { conference, id } = participant;
 
     if (local) {
-        // avatarID
-        //
-        // TODO Get the avatarID of the local participant from localStorage.
-        avatarID || (avatarID = randomHexString(32));
-
         // conference
         //
         // XXX The local participant is not identified in association with a
@@ -225,6 +220,7 @@ function _participantJoined({ participant }) {
         email,
         id,
         isFakeParticipant,
+        isJigasi,
         loadableAvatarUrl,
         local: local || false,
         name,
