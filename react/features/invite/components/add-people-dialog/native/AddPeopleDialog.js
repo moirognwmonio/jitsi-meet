@@ -4,7 +4,6 @@ import _ from 'lodash';
 import React from 'react';
 import {
     ActivityIndicator,
-    Alert,
     FlatList,
     KeyboardAvoidingView,
     Platform,
@@ -14,12 +13,13 @@ import {
     View
 } from 'react-native';
 
+import { AlertDialog, openDialog } from '../../../../base/dialog';
 import { Icon } from '../../../../base/font-icons';
 import { translate } from '../../../../base/i18n';
 import {
     AvatarListItem,
     HeaderWithNavigation,
-    Modal,
+    SlidingView,
     type Item
 } from '../../../../base/react';
 import { connect } from '../../../../base/redux';
@@ -149,9 +149,10 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
         }
 
         return (
-            <Modal
-                onRequestClose = { this._onCloseAddPeopleDialog }
-                visible = { this.props._isVisible }>
+            <SlidingView
+                onHide = { this._onCloseAddPeopleDialog }
+                position = 'bottom'
+                show = { this.props._isVisible } >
                 <HeaderWithNavigation
                     forwardDisabled = { this._isAddDisabled() }
                     forwardLabelKey = 'inviteDialog.send'
@@ -196,7 +197,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                             style = { styles.resultList } />
                     </SafeAreaView>
                 </KeyboardAvoidingView>
-            </Modal>
+            </SlidingView>
         );
     }
 
@@ -242,15 +243,21 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
         this._onTypeQuery('');
     }
 
-    _onCloseAddPeopleDialog: () => void
+    _onCloseAddPeopleDialog: () => boolean
 
     /**
      * Closes the dialog.
      *
-     * @returns {void}
+     * @returns {boolean}
      */
     _onCloseAddPeopleDialog() {
-        this.props.dispatch(setAddPeopleDialogVisible(false));
+        if (this.props._isVisible) {
+            this.props.dispatch(setAddPeopleDialogVisible(false));
+
+            return true;
+        }
+
+        return false;
     }
 
     _onInvite: () => void
@@ -495,17 +502,11 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
      * @returns {void}
      */
     _showFailedInviteAlert() {
-        const { t } = this.props;
-
-        Alert.alert(
-            t('inviteDialog.alertTitle'),
-            t('inviteDialog.alertText'),
-            [
-                {
-                    text: t('inviteDialog.alertOk')
-                }
-            ]
-        );
+        this.props.dispatch(openDialog(AlertDialog, {
+            contentKey: {
+                key: 'inviteDialog.alertText'
+            }
+        }));
     }
 }
 
