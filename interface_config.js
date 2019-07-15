@@ -187,7 +187,7 @@ var interfaceConfig = {
      *
      * Note: this mode is experimental and subject to breakage.
      */
-    AUTO_PIN_LATEST_SCREEN_SHARE: 'remote-only'
+    AUTO_PIN_LATEST_SCREEN_SHARE: 'remote-only',
 
     /**
      * How many columns the tile view can expand to. The respected range is
