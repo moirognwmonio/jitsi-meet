@@ -8,8 +8,22 @@ import {
     createToolbarEvent,
     sendAnalytics
 } from '../../../analytics';
-import { openDialog } from '../../../base/dialog';
+import { openDialog, toggleDialog } from '../../../base/dialog';
 import { translate } from '../../../base/i18n';
+import {
+    IconChat,
+    IconExitFullScreen,
+    IconFeedback,
+    IconFullScreen,
+    IconInvite,
+    IconOpenInNew,
+    IconPresentation,
+    IconRaisedHand,
+    IconRec,
+    IconShareDesktop,
+    IconShareDoc,
+    IconShareVideo
+} from '../../../base/icons';
 import {
     getLocalParticipant,
     getParticipants,
@@ -221,6 +235,8 @@ class Toolbox extends Component<Props, State> {
             = this._onShortcutToggleRaiseHand.bind(this);
         this._onShortcutToggleScreenshare
             = this._onShortcutToggleScreenshare.bind(this);
+        this._onShortcutToggleVideoQuality
+            = this._onShortcutToggleVideoQuality.bind(this);
         this._onToolbarOpenFeedback
             = this._onToolbarOpenFeedback.bind(this);
         this._onToolbarOpenInvite = this._onToolbarOpenInvite.bind(this);
@@ -259,6 +275,11 @@ class Toolbox extends Component<Props, State> {
      */
     componentDidMount() {
         const KEYBOARD_SHORTCUTS = [
+            this._shouldShowButton('videoquality') && {
+                character: 'A',
+                exec: this._onShortcutToggleVideoQuality,
+                helpDescription: 'keyboardShortcuts.videoQuality'
+            },
             this._shouldShowButton('chat') && {
                 character: 'C',
                 exec: this._onShortcutToggleChat,
@@ -320,7 +341,7 @@ class Toolbox extends Component<Props, State> {
      * @returns {void}
      */
     componentWillUnmount() {
-        [ 'C', 'D', 'R', 'S' ].forEach(letter =>
+        [ 'A', 'C', 'D', 'R', 'S' ].forEach(letter =>
             APP.keyboardshortcut.unregisterShortcut(letter));
 
         window.removeEventListener('resize', this._onResize);
@@ -384,7 +405,7 @@ class Toolbox extends Component<Props, State> {
     }
 
     /**
-     * Dispatches an action to toggle the video quality dialog.
+     * Dispatches an action to open the video quality dialog.
      *
      * @private
      * @returns {void}
@@ -479,6 +500,16 @@ class Toolbox extends Component<Props, State> {
         this.props.dispatch(toggleSharedVideo());
     }
 
+    /**
+     * Dispatches an action to toggle the video quality dialog.
+     *
+     * @private
+     * @returns {void}
+     */
+    _doToggleVideoQuality() {
+        this.props.dispatch(toggleDialog(VideoQualityDialog));
+    }
+
     _onMouseOut: () => void;
 
     /**
@@ -552,6 +583,21 @@ class Toolbox extends Component<Props, State> {
             }));
 
         this._doToggleChat();
+    }
+
+    _onShortcutToggleVideoQuality: () => void;
+
+    /**
+    * Creates an analytics keyboard shortcut event and dispatches an action for
+    * toggling the display of Video Quality.
+    *
+    * @private
+    * @returns {void}
+    */
+    _onShortcutToggleVideoQuality() {
+        sendAnalytics(createShortcutEvent('video.quality'));
+
+        this._doToggleVideoQuality();
     }
 
     _onShortcutToggleFullScreen: () => void;
@@ -868,7 +914,8 @@ class Toolbox extends Component<Props, State> {
                     accessibilityLabel
                         = { t('toolbar.accessibilityLabel.shareYourScreen') }
                     disabled = { _desktopSharingEnabled }
-                    icon = { 'icon-share-desktop' }
+                    icon = { IconShareDesktop }
+                    iconId = 'share-desktop'
                     key = 'desktop'
                     onClick = { this._onToolbarToggleScreenshare }
                     text = {
@@ -880,9 +927,6 @@ class Toolbox extends Component<Props, State> {
             );
         }
 
-        const classNames = `icon-share-desktop ${
-            _screensharing ? 'toggled' : ''} ${
-            _desktopSharingEnabled ? '' : 'disabled'}`;
         const tooltip = t(
             _desktopSharingEnabled
                 ? 'dialog.shareYourScreen' : _desktopSharingDisabledTooltipKey);
@@ -891,8 +935,10 @@ class Toolbox extends Component<Props, State> {
             <ToolbarButton
                 accessibilityLabel
                     = { t('toolbar.accessibilityLabel.shareYourScreen') }
-                iconName = { classNames }
+                disabled = { !_desktopSharingEnabled }
+                icon = { IconShareDesktop }
                 onClick = { this._onToolbarToggleScreenshare }
+                toggled = { _screensharing }
                 tooltip = { tooltip } />
         );
     }
@@ -937,8 +983,8 @@ class Toolbox extends Component<Props, State> {
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.fullScreen') }
                     icon = { _fullScreen
-                        ? 'icon-exit-full-screen'
-                        : 'icon-full-screen' }
+                        ? IconExitFullScreen
+                        : IconFullScreen }
                     key = 'fullscreen'
                     onClick = { this._onToolbarToggleFullScreen }
                     text = { _fullScreen
@@ -954,7 +1000,7 @@ class Toolbox extends Component<Props, State> {
                 && <OverflowMenuItem
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.sharedvideo') }
-                    icon = 'icon-shared-video'
+                    icon = { IconShareVideo }
                     key = 'sharedvideo'
                     onClick = { this._onToolbarToggleSharedVideo }
                     text = { _sharingVideo
@@ -965,7 +1011,7 @@ class Toolbox extends Component<Props, State> {
                 && <OverflowMenuItem
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.document') }
-                    icon = 'icon-share-doc'
+                    icon = { IconShareDoc }
                     key = 'etherpad'
                     onClick = { this._onToolbarToggleEtherpad }
                     text = { _editingDocument
@@ -983,7 +1029,7 @@ class Toolbox extends Component<Props, State> {
                 && <OverflowMenuItem
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.speakerStats') }
-                    icon = 'icon-presentation'
+                    icon = { IconPresentation }
                     key = 'stats'
                     onClick = { this._onToolbarOpenSpeakerStats }
                     text = { t('toolbar.speakerStats') } />,
@@ -992,7 +1038,7 @@ class Toolbox extends Component<Props, State> {
                 && <OverflowMenuItem
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.feedback') }
-                    icon = 'icon-feedback'
+                    icon = { IconFeedback }
                     key = 'feedback'
                     onClick = { this._onToolbarOpenFeedback }
                     text = { t('toolbar.feedback') } />,
@@ -1000,7 +1046,7 @@ class Toolbox extends Component<Props, State> {
                 && <OverflowMenuItem
                     accessibilityLabel =
                         { t('toolbar.accessibilityLabel.shortcuts') }
-                    icon = 'icon-open_in_new'
+                    icon = { IconOpenInNew }
                     key = 'shortcuts'
                     onClick = { this._onToolbarOpenKeyboardShortcuts }
                     text = { t('toolbar.shortcuts') } />
@@ -1031,7 +1077,7 @@ class Toolbox extends Component<Props, State> {
                     <OverflowMenuItem
                         accessibilityLabel =
                             { t('toolbar.accessibilityLabel.raiseHand') }
-                        icon = { 'icon-raised-hand' }
+                        icon = { IconRaisedHand }
                         key = 'raisedHand'
                         onClick = { this._onToolbarToggleRaiseHand }
                         text = {
@@ -1046,7 +1092,7 @@ class Toolbox extends Component<Props, State> {
                     <OverflowMenuItem
                         accessibilityLabel =
                             { t('toolbar.accessibilityLabel.chat') }
-                        icon = { 'icon-chat' }
+                        icon = { IconChat }
                         key = 'chat'
                         onClick = { this._onToolbarToggleChat }
                         text = {
@@ -1064,7 +1110,7 @@ class Toolbox extends Component<Props, State> {
                     <OverflowMenuItem
                         accessibilityLabel =
                             { t('toolbar.accessibilityLabel.invite') }
-                        icon = 'icon-invite'
+                        icon = { IconInvite }
                         key = 'invite'
                         onClick = { this._onToolbarOpenInvite }
                         text = { t('toolbar.invite') } />
@@ -1076,7 +1122,7 @@ class Toolbox extends Component<Props, State> {
                     <OverflowMenuItem
                         accessibilityLabel
                             = { t('toolbar.accessibilityLabel.localRecording') }
-                        icon = { 'icon-thumb-menu icon-rec' }
+                        icon = { IconRec }
                         key = 'localrecording'
                         onClick = {
                             this._onToolbarOpenLocalRecordingInfoDialog
@@ -1191,20 +1237,18 @@ class Toolbox extends Component<Props, State> {
                                 {
                                     t('toolbar.accessibilityLabel.raiseHand')
                                 }
-                            iconName = { _raisedHand
-                                ? 'icon-raised-hand toggled'
-                                : 'icon-raised-hand' }
+                            icon = { IconRaisedHand }
                             onClick = { this._onToolbarToggleRaiseHand }
+                            toggled = { _raisedHand }
                             tooltip = { t('toolbar.raiseHand') } /> }
                     { buttonsLeft.indexOf('chat') !== -1
                         && <div className = 'toolbar-button-with-badge'>
                             <ToolbarButton
                                 accessibilityLabel =
                                     { t('toolbar.accessibilityLabel.chat') }
-                                iconName = { _chatOpen
-                                    ? 'icon-chat toggled'
-                                    : 'icon-chat' }
+                                icon = { IconChat }
                                 onClick = { this._onToolbarToggleChat }
+                                toggled = { _chatOpen }
                                 tooltip = { t('toolbar.chat') } />
                             <ChatCounter />
                         </div> }
@@ -1234,7 +1278,7 @@ class Toolbox extends Component<Props, State> {
                         && <ToolbarButton
                             accessibilityLabel =
                                 { t('toolbar.accessibilityLabel.invite') }
-                            iconName = 'icon-invite'
+                            icon = { IconInvite }
                             onClick = { this._onToolbarOpenInvite }
                             tooltip = { t('toolbar.invite') } /> }
                     {

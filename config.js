@@ -124,10 +124,6 @@ var config = {
     // are requested again.
     // enableLayerSuspension: false,
 
-    // Suspend sending video if bandwidth estimation is too low. This may cause
-    // problems with audio playback. Disabled until these are fixed.
-    disableSuspendVideo: true,
-
     // Every participant after the Nth will start video muted.
     startVideoMuted: 5,
 
@@ -201,6 +197,9 @@ var config = {
     // Transcription (in interface_config,
     // subtitles and buttons can be configured)
     // transcribingEnabled: false,
+
+    // Enables automatic turning on captions when recording is started
+    // autoCaptionOnRecord: false,
 
     // Misc
 

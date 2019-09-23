@@ -5,6 +5,7 @@ import type { Dispatch } from 'redux';
 import { setRoom } from '../base/conference';
 import {
     configWillLoad,
+    createFakeConfig,
     loadConfigError,
     restoreConfig,
     setConfig,
@@ -25,8 +26,7 @@ import {
     getDefaultURL,
     getName
 } from './functions';
-
-const logger = require('jitsi-meet-logger').getLogger(__filename);
+import logger from './logger';
 
 declare var APP: Object;
 
@@ -102,9 +102,15 @@ export function appNavigate(uri: ?string) {
                 config = restoreConfig(baseURL);
 
                 if (!config) {
-                    dispatch(loadConfigError(error, locationURL));
+                    if (room) {
+                        dispatch(loadConfigError(error, locationURL));
 
-                    return;
+                        return;
+                    }
+
+                    // If there is no room (we are on the welcome page), don't fail, just create a fake one.
+                    logger.warn('Failed to load config but there is no room, applying a fake one');
+                    config = createFakeConfig(baseURL);
                 }
             }
         }
