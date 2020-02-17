@@ -11,8 +11,8 @@ var interfaceConfig = {
      */
     DISABLE_VIDEO_BACKGROUND: false,
 
-    INITIAL_TOOLBAR_TIMEOUT: 20000,
-    TOOLBAR_TIMEOUT: 4000,
+    INITIAL_TOOLBAR_TIMEOUT: 10000,
+    TOOLBAR_TIMEOUT: 2000,
     TOOLBAR_ALWAYS_VISIBLE: false,
     DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow User',
     DEFAULT_LOCAL_DISPLAY_NAME: 'me',
@@ -237,7 +237,7 @@ var interfaceConfig = {
      * explicitly dismissed through a user action. The value is how long, in
      * milliseconds, those notifications should remain displayed.
      */
-    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 1500
+    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 1000
 
     // List of undocumented settings
     /**
