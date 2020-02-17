@@ -26,11 +26,11 @@ var interfaceConfig = {
     SHOW_DEEP_LINKING_IMAGE: false,
     GENERATE_ROOMNAMES_ON_WELCOME_PAGE: true,
     DISPLAY_WELCOME_PAGE_CONTENT: false,
+    DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
     APP_NAME: 'Rocket.Chat',
     NATIVE_APP_NAME: 'Rocket.Chat',
-    PROVIDER_NAME: 'Rocket.Chat',
-    // Allow i18n to detect the system language
-    LANG_DETECTION: true,
+    PROVIDER_NAME: 'Rocket.Chat',    
+    LANG_DETECTION: true, // Allow i18n to detect the system language
     INVITATION_POWERED_BY: false,
 
     /**
@@ -50,7 +50,7 @@ var interfaceConfig = {
         'fodeviceselection', 'hangup', 'profile', 'info', 'recording',
         'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
         'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
-        'tileview', 'videobackgroundblur'
+        'tileview', 'videobackgroundblur', 'download', 'help'
     ],
 
     SETTINGS_SECTIONS: [ 'devices', 'language', 'moderator', 'profile', 'calendar' ],
@@ -190,6 +190,23 @@ var interfaceConfig = {
     AUTO_PIN_LATEST_SCREEN_SHARE: 'remote-only',
 
     /**
+     * If true, presence status: busy, calling, connected etc. is not displayed.
+     */
+    DISABLE_PRESENCE_STATUS: false,
+
+    /**
+     * If true, notifications regarding joining/leaving are no longer displayed.
+     */
+    DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+
+    /**
+    * Decides whether the chrome extension banner should be rendered on the landing page and during the meeting.
+    * If this is set to false, the banner will not be rendered at all. If set to true, the check for extension(s)
+    * being already installed is done before rendering.
+    */
+    SHOW_CHROME_EXTENSION_BANNER: true,
+
+    /**
      * How many columns the tile view can expand to. The respected range is
      * between 1 and 5.
      */
@@ -220,7 +237,14 @@ var interfaceConfig = {
      * explicitly dismissed through a user action. The value is how long, in
      * milliseconds, those notifications should remain displayed.
      */
-    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 15000
+    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 1500
+
+    // List of undocumented settings
+    /**
+     INDICATOR_FONT_SIZES
+     MOBILE_DYNAMIC_LINK
+     PHONE_NUMBER_REGEX
+    */
 };
 
 /* eslint-enable no-unused-vars, no-var, max-len */

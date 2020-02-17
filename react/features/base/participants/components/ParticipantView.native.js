@@ -12,7 +12,7 @@ import {
 } from '../../media';
 import { Container, TintedView } from '../../react';
 import { connect } from '../../redux';
-import { StyleType } from '../../styles';
+import type { StyleType } from '../../styles';
 import { TestHint } from '../../testing/components';
 import { getTrackByMediaTypeAndParticipant } from '../../tracks';
 
@@ -143,9 +143,6 @@ class ParticipantView extends Component<Props> {
         switch (connectionStatus) {
         case JitsiParticipantConnectionStatus.INACTIVE:
             messageKey = 'connection.LOW_BANDWIDTH';
-            break;
-        case JitsiParticipantConnectionStatus.INTERRUPTED:
-            messageKey = 'connection.USER_CONNECTION_INTERRUPTED';
             break;
         default:
             return null;

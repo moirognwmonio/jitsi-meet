@@ -11,6 +11,7 @@ import JitsiMeetJS, {
     JitsiConferenceEvents,
     JitsiRecordingConstants
 } from '../base/lib-jitsi-meet';
+import { getParticipantDisplayName } from '../base/participants';
 import { MiddlewareRegistry, StateListenerRegistry } from '../base/redux';
 import {
     playSound,
@@ -24,6 +25,7 @@ import {
     hidePendingRecordingNotification,
     showPendingRecordingNotification,
     showRecordingError,
+    showStartedRecordingNotification,
     showStoppedRecordingNotification,
     updateRecordingSessionData
 } from './actions';
@@ -125,13 +127,19 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     case RECORDING_SESSION_UPDATED: {
         // When in recorder mode no notifications are shown
         // or extra sounds are also not desired
-        if (getState()['features/base/config'].iAmRecorder) {
+        // but we want to indicate those in case of sip gateway
+        const {
+            iAmRecorder,
+            iAmSipGateway
+        } = getState()['features/base/config'];
+
+        if (iAmRecorder && !iAmSipGateway) {
             break;
         }
 
         const updatedSessionData
             = getSessionById(getState(), action.sessionData.id);
-        const { mode } = updatedSessionData;
+        const { initiator, mode, terminator } = updatedSessionData;
         const { PENDING, OFF, ON } = JitsiRecordingConstants.status;
 
         if (updatedSessionData.status === PENDING
@@ -142,6 +150,10 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
             if (updatedSessionData.status === ON
                 && (!oldSessionData || oldSessionData.status !== ON)) {
+                const initiatorName = initiator && getParticipantDisplayName(getState, initiator.getId());
+
+                initiatorName && dispatch(showStartedRecordingNotification(mode, initiatorName));
+
                 let soundID;
 
                 if (mode === JitsiRecordingConstants.mode.FILE) {
@@ -156,7 +168,8 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 }
             } else if (updatedSessionData.status === OFF
                 && (!oldSessionData || oldSessionData.status !== OFF)) {
-                dispatch(showStoppedRecordingNotification(mode));
+                dispatch(showStoppedRecordingNotification(
+                    mode, terminator && getParticipantDisplayName(getState, terminator.getId())));
                 let duration = 0, soundOff, soundOn;
 
                 if (oldSessionData && oldSessionData.timestamp) {

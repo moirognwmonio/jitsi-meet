@@ -11,13 +11,12 @@ import EtherpadManager from './etherpad/Etherpad';
 import SharedVideoManager from './shared_video/SharedVideo';
 
 import VideoLayout from './videolayout/VideoLayout';
-import Filmstrip from './videolayout/Filmstrip';
 
 import { getLocalParticipant } from '../../react/features/base/participants';
 import { toggleChat } from '../../react/features/chat';
-import { setEtherpadHasInitialzied } from '../../react/features/etherpad';
+import { setDocumentUrl } from '../../react/features/etherpad';
 import { setFilmstripVisible } from '../../react/features/filmstrip';
-import { setNotificationsEnabled } from '../../react/features/notifications';
+import { joinLeaveNotificationsDisabled, setNotificationsEnabled } from '../../react/features/notifications';
 import {
     dockToolbox,
     setToolboxEnabled,
@@ -158,8 +157,6 @@ UI.start = function() {
     // Set the defaults for prompt dialogs.
     $.prompt.setDefaults({ persistent: false });
 
-    Filmstrip.init(eventEmitter);
-
     VideoLayout.init(eventEmitter);
     if (!interfaceConfig.filmStripOnly) {
         VideoLayout.initLargeVideo();
@@ -169,7 +166,7 @@ UI.start = function() {
     // resizeVideoArea) because the animation is not visible anyway. Plus with
     // the current dom layout, the quality label is part of the video layout and
     // will be seen animating in.
-    VideoLayout.resizeVideoArea(true, false);
+    VideoLayout.resizeVideoArea();
 
     sharedVideoManager = new SharedVideoManager(eventEmitter);
 
@@ -180,10 +177,10 @@ UI.start = function() {
         // in case of iAmSipGateway keep local video visible
         if (!config.iAmSipGateway) {
             VideoLayout.setLocalVideoVisible(false);
+            APP.store.dispatch(setNotificationsEnabled(false));
         }
 
         APP.store.dispatch(setToolboxEnabled(false));
-        APP.store.dispatch(setNotificationsEnabled(false));
         UI.messageHandler.enablePopups(false);
     }
 };
@@ -202,7 +199,7 @@ UI.bindEvents = () => {
      *
      */
     function onResize() {
-        VideoLayout.resizeVideoArea();
+        VideoLayout.onResize();
     }
 
     // Resize and reposition videos in full screen mode.
@@ -240,10 +237,12 @@ UI.initEtherpad = name => {
         return;
     }
     logger.log('Etherpad is enabled');
-    etherpadManager
-        = new EtherpadManager(config.etherpad_base, name, eventEmitter);
 
-    APP.store.dispatch(setEtherpadHasInitialzied());
+    etherpadManager = new EtherpadManager(eventEmitter);
+
+    const url = new URL(name, config.etherpad_base);
+
+    APP.store.dispatch(setDocumentUrl(url.toString()));
 };
 
 /**
@@ -328,7 +327,9 @@ UI.updateUserStatus = (user, status) => {
     const reduxState = APP.store.getState() || {};
     const { calleeInfoVisible } = reduxState['features/invite'] || {};
 
-    if (!status || calleeInfoVisible) {
+    // We hide status updates when join/leave notifications are disabled,
+    // as jigasi is the component with statuses and they are seen as join/leave notifications.
+    if (!status || calleeInfoVisible || joinLeaveNotificationsDisabled()) {
         return;
     }
 
@@ -350,12 +351,6 @@ UI.toggleFilmstrip = function() {
 
     APP.store.dispatch(setFilmstripVisible(!visible));
 };
-
-/**
- * Checks if the filmstrip is currently visible or not.
- * @returns {true} if the filmstrip is currently visible, and false otherwise.
- */
-UI.isFilmstripVisible = () => Filmstrip.isFilmstripVisible();
 
 /**
  * Toggles the visibility of the chat panel.
@@ -695,10 +690,6 @@ UI.showExtensionInlineInstallationDialog = function(callback) {
         loadedFunction: $.noop,
         closeFunction
     });
-};
-
-UI.updateDevicesAvailability = function(id, devices) {
-    VideoLayout.setDeviceAvailabilityIcons(id, devices);
 };
 
 /**

@@ -421,7 +421,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
         );
     }
 
-    _renderInvitedItem: Object => ?React$Element<*>
+    _renderInvitedItem: Object => React$Element<any> | null
 
     /**
      * Renders a single item in the invited {@code FlatList}.
@@ -429,9 +429,9 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
      * @param {Object} flatListItem - An item of the data array of the
      * {@code FlatList}.
      * @param {number} index - The index of the currently rendered item.
-     * @returns {?React$Element<*>}
+     * @returns {?React$Element<any>}
      */
-    _renderInvitedItem(flatListItem, index) {
+    _renderInvitedItem(flatListItem, index): React$Element<any> | null {
         const { item } = flatListItem;
         const renderableItem = this._getRenderableItem(flatListItem);
 
@@ -443,6 +443,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                     <AvatarListItem
                         avatarOnly = { true }
                         avatarSize = { AVATAR_SIZE }
+                        avatarStatus = { item.status }
                         avatarStyle = { styles.avatar }
                         avatarTextStyle = { styles.avatarText }
                         item = { renderableItem }
@@ -457,7 +458,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
         );
     }
 
-    _renderItem: Object => ?React$Element<*>
+    _renderItem: Object => React$Element<any> | null
 
     /**
      * Renders a single item in the search result {@code FlatList}.
@@ -467,7 +468,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
      * @param {number} index - The index of the currently rendered item.
      * @returns {?React$Element<*>}
      */
-    _renderItem(flatListItem, index) {
+    _renderItem(flatListItem, index): React$Element<any> | null {
         const { item } = flatListItem;
         const { inviteItems } = this.state;
         let selected = false;
@@ -497,6 +498,7 @@ class AddPeopleDialog extends AbstractAddPeopleDialog<Props, State> {
                     style = { styles.itemWrapper }>
                     <AvatarListItem
                         avatarSize = { AVATAR_SIZE }
+                        avatarStatus = { item.status }
                         avatarStyle = { styles.avatar }
                         avatarTextStyle = { styles.avatarText }
                         item = { renderableItem }

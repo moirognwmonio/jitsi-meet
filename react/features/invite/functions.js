@@ -525,6 +525,23 @@ export function getDialInfoPageURLForURIString(
 }
 
 /**
+ * Returns whether or not dial-in related UI should be displayed.
+ *
+ * @param {Object} dialIn - Dial in information.
+ * @returns {boolean}
+ */
+export function shouldDisplayDialIn(dialIn: Object) {
+    const { conferenceID, numbers, numbersEnabled } = dialIn;
+    const phoneNumber = _getDefaultPhoneNumber(numbers);
+
+    return Boolean(
+            conferenceID
+            && numbers
+            && numbersEnabled
+            && phoneNumber);
+}
+
+/**
  * Sets the internal state of which dial-in number to display.
  *
  * @param {Array<string>|Object} dialInNumbers - The array or object of
@@ -533,7 +550,11 @@ export function getDialInfoPageURLForURIString(
  * @returns {string|null}
  */
 export function _getDefaultPhoneNumber(
-        dialInNumbers: Object): ?string {
+        dialInNumbers: ?Object): ?string {
+
+    if (!dialInNumbers) {
+        return null;
+    }
 
     if (Array.isArray(dialInNumbers)) {
         // new syntax follows
@@ -575,6 +596,13 @@ export function _decodeRoomURI(url: string) {
     // we want to decode urls when the do not contain space, ' ', which url encoded is %20
     if (roomUrl && !roomUrl.includes('%20')) {
         roomUrl = decodeURI(roomUrl);
+    }
+
+    // Handles a special case where the room name has % encoded, the decoded will have
+    // % followed by a char (non-digit) which is not a valid URL and room name ... so we do not
+    // want to show this decoded
+    if (roomUrl.match(/.*%[^\d].*/)) {
+        return url;
     }
 
     return roomUrl;
