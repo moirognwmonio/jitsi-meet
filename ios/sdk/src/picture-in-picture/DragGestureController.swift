@@ -88,7 +88,7 @@ final class DragGestureController {
             else { return CGPoint.zero }
 
         let currentSize = view.frame.size
-        let adjustedBounds = UIEdgeInsetsInsetRect(bounds, insets)
+        let adjustedBounds = bounds.inset(by: insets)
         let threshold: CGFloat = 20.0
         let velocity = panGesture.velocity(in: view.superview)
         let location = panGesture.location(in: view.superview)

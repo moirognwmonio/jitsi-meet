@@ -22,8 +22,8 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 
-#import "Invite+Private.h"
-#import "InviteController+Private.h"
+/*#import "Invite+Private.h"
+#import "InviteController+Private.h"*/
 #import "JitsiMeetView+Private.h"
 #import "RCTBridgeWrapper.h"
 
