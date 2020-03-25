@@ -18,6 +18,7 @@ var interfaceConfig = {
     DEFAULT_LOCAL_DISPLAY_NAME: 'me',
     SHOW_JITSI_WATERMARK: false,
     JITSI_WATERMARK_LINK: 'https://jitsi.org',
+
     // if watermark is disabled by default, it can be shown only for guests
     SHOW_WATERMARK_FOR_GUESTS: false,
     SHOW_BRAND_WATERMARK: false,
@@ -29,7 +30,7 @@ var interfaceConfig = {
     DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
     APP_NAME: 'Rocket.Chat',
     NATIVE_APP_NAME: 'Rocket.Chat',
-    PROVIDER_NAME: 'Rocket.Chat',    
+    PROVIDER_NAME: 'Rocket.Chat',
     LANG_DETECTION: true, // Allow i18n to detect the system language
     INVITATION_POWERED_BY: false,
 
@@ -237,7 +238,13 @@ var interfaceConfig = {
      * explicitly dismissed through a user action. The value is how long, in
      * milliseconds, those notifications should remain displayed.
      */
-    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 1000
+    ENFORCE_NOTIFICATION_AUTO_DISMISS_TIMEOUT: 1000,
+
+    /**
+     * Whether or not the jitsi meet app could be opened in a mobile browser.
+     * Defaults to false.
+     */
+    OPEN_IN_MOBILE_BROWSER: true
 
     // List of undocumented settings
     /**
