@@ -6,10 +6,10 @@ var config = {
 
     hosts: {
         // XMPP domain.
-        domain: 'meet.jit.si',
+        domain: 'meet.jitsi',
 
         // XMPP MUC domain. FIXME: use XEP-0030 to discover it.
-        muc: 'conference.meet.jit.si',
+        muc: 'muc.meet.jitsi',
 
         // When using authentication, domain for guest users.
         // anonymousdomain: 'guest.example.com',
@@ -24,11 +24,11 @@ var config = {
         // call_control: 'callcontrol.jitsi-meet.example.com',
 
         // Focus component domain. Defaults to focus.<domain>.
-        focus: 'focus.meet.jit.si'
+        //focus: 'focus.meet.jit.si'
     },
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
-    bosh: '//meet.jit.si/http-bind',
+    bosh: '//jitsi-test.cloud.rocket.chat/http-bind',
 
     // Websocket URL
     // websocket: 'wss://jitsi-meet.example.com/xmpp-websocket',
@@ -39,7 +39,7 @@ var config = {
     // The real JID of focus participant - can be overridden here
     // focusUserJid: 'focus@auth.jitsi-meet.example.com',
 
-    externalConnectUrl: '//meet.jit.si/http-pre-bind',
+    externalConnectUrl: '//jitsi-test.cloud.rocket.chat/http-pre-bind',
 
     // Testing / experimental features.
     //
@@ -179,7 +179,7 @@ var config = {
     // Recording
 
     // Whether to enable file recording or not.
-    // fileRecordingsEnabled: false,
+    fileRecordingsEnabled: true,
     // Enable the dropbox integration.
     // dropbox: {
     //     appKey: '<APP_KEY>' // Specify your app key here.
@@ -200,7 +200,7 @@ var config = {
     // fileRecordingsServiceSharingEnabled: false,
 
     // Whether to enable live streaming or not.
-    liveStreamingEnabled: false,
+    liveStreamingEnabled: true,
 
     // Transcription (in interface_config,
     // subtitles and buttons can be configured)
@@ -391,7 +391,7 @@ var config = {
     },
 
     // Decides whether the start/stop recording audio notifications should play on record.
-    // disableRecordAudioNotification: false,
+    disableRecordAudioNotification: true,
 
     // Information for the chrome extension banner
     // chromeExtensionBanner: {
