@@ -9,7 +9,7 @@ var config = {
         domain: 'meet.jitsi',
 
         // XMPP MUC domain. FIXME: use XEP-0030 to discover it.
-        muc: 'muc.meet.jitsi',
+        muc: 'muc.meet.jitsi'
 
         // When using authentication, domain for guest users.
         // anonymousdomain: 'guest.example.com',
@@ -182,6 +182,7 @@ var config = {
 
     // Whether to enable file recording or not.
     fileRecordingsEnabled: true,
+
     // Enable the dropbox integration.
     // dropbox: {
     //     appKey: '<APP_KEY>' // Specify your app key here.
@@ -381,7 +382,7 @@ var config = {
         scriptURLs: [
             'libs/analytics-ga.min.js' // google-analytics
         //      "https://example.com/my-custom-analytics.js"
-        ],
+        ]
     },
 
     // Information about the jitsi-meet instance we are connecting to, including
