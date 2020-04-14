@@ -24,7 +24,7 @@ var config = {
         // call_control: 'callcontrol.jitsi-meet.example.com',
 
         // Focus component domain. Defaults to focus.<domain>.
-        //focus: 'focus.meet.jit.si'
+        // focus: 'focus.meet.jit.si'
     },
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
@@ -379,7 +379,7 @@ var config = {
 
         // Array of script URLs to load as lib-jitsi-meet "analytics handlers".
         scriptURLs: [
-            "libs/analytics-ga.min.js", // google-analytics
+            'libs/analytics-ga.min.js' // google-analytics
         //      "https://example.com/my-custom-analytics.js"
         ],
     },
