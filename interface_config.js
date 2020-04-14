@@ -17,9 +17,8 @@ var interfaceConfig = {
     DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow User',
     DEFAULT_LOCAL_DISPLAY_NAME: 'me',
     SHOW_JITSI_WATERMARK: false,
-    JITSI_WATERMARK_LINK: 'https://jitsi.org',
-    // if watermark is disabled by default, it can be shown only for guests
-    SHOW_WATERMARK_FOR_GUESTS: false,
+    JITSI_WATERMARK_LINK: 'https://rocket.chat',
+    SHOW_WATERMARK_FOR_GUESTS: false, // if watermark is disabled by default, it can be shown only for guests
     SHOW_BRAND_WATERMARK: false,
     BRAND_WATERMARK_LINK: '',
     SHOW_POWERED_BY: false,
@@ -29,7 +28,7 @@ var interfaceConfig = {
     DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
     APP_NAME: 'Rocket.Chat',
     NATIVE_APP_NAME: 'Rocket.Chat',
-    PROVIDER_NAME: 'Rocket.Chat',    
+    PROVIDER_NAME: 'Rocket.Chat',
     LANG_DETECTION: true, // Allow i18n to detect the system language
     INVITATION_POWERED_BY: false,
 
