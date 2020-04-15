@@ -182,6 +182,9 @@ var config = {
 
     // Whether to enable file recording or not.
     fileRecordingsEnabled: true,
+    
+    // Without this recorder shows up as Fellow user
+    hiddenDomain: 'recorder.meet.jitsi',
 
     // Enable the dropbox integration.
     // dropbox: {
