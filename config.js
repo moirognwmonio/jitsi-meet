@@ -47,9 +47,6 @@ var config = {
     //
 
     testing: {
-        // Enables experimental simulcast support on Firefox.
-        enableFirefoxSimulcast: false,
-
         // P2P test mode disables automatic switching to P2P when there are 2
         // participants in the conference.
         p2pTestMode: false
@@ -454,6 +451,14 @@ var config = {
     // A property to disable the right click context menu for localVideo
     // the menu has option to flip the locally seen video for local presentations
     // disableLocalVideoFlip: false,
+
+    // Mainly privacy related settings
+
+    // Disables all invite functions from the app (share, invite, dial out...etc)
+    // disableInviteFunctions: true,
+
+    // Disables storing the room name to the recents list
+    // doNotStoreRoom: true,
 
     // Deployment specific URLs.
     // deploymentUrls: {
