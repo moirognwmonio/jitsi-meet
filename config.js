@@ -6,10 +6,10 @@ var config = {
 
     hosts: {
         // XMPP domain.
-        domain: 'meet.jitsi',
+        domain: 'jitsi.use1.cloud.rocket.chat',
 
         // XMPP MUC domain. FIXME: use XEP-0030 to discover it.
-        muc: 'muc.meet.jitsi'
+        muc: 'conference.jitsi.use1.cloud.rocket.chat'
 
         // When using authentication, domain for guest users.
         // anonymousdomain: 'guest.example.com',
@@ -29,7 +29,7 @@ var config = {
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
     // OG bosh: '//meet.jit.si/http-bind',
-    bosh: '//jitsi-test.cloud.rocket.chat/http-bind',
+    bosh: '//jitsi.use1.cloud.rocket.chat/http-bind',
 
     // Websocket URL
     // websocket: 'wss://jitsi-meet.example.com/xmpp-websocket',
@@ -41,7 +41,7 @@ var config = {
     // focusUserJid: 'focus@auth.jitsi-meet.example.com',
 
     // OG externalConnectUrl: '//meet.jit.si/http-pre-bind',
-    externalConnectUrl: '//jitsi-test.cloud.rocket.chat/http-pre-bind',
+    externalConnectUrl: '//jitsi.use1.cloud.rocket.chat/http-pre-bind',
 
     // Testing / experimental features.
     //
@@ -178,10 +178,10 @@ var config = {
     // Recording
 
     // Whether to enable file recording or not.
-    fileRecordingsEnabled: true,
+    fileRecordingsEnabled: false,
     
     // Without this recorder shows up as Fellow user
-    hiddenDomain: 'recorder.meet.jitsi',
+    hiddenDomain: 'recorder.jitsi.use1.cloud.rocket.chat',
 
     // Enable the dropbox integration.
     // dropbox: {
