@@ -179,7 +179,7 @@ var config = {
 
     // Whether to enable file recording or not.
     fileRecordingsEnabled: false,
-    
+
     // Without this recorder shows up as Fellow user
     hiddenDomain: 'recorder.jitsi.use1.cloud.rocket.chat',
 
