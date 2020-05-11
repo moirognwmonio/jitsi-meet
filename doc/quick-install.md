@@ -22,7 +22,7 @@ Finally on the same machine test that you can ping the FQDN with: `ping "$(hostn
 
 ### Add the Jitsi package repository
 ```sh
-echo 'deb https://download.jitsi.org stable/' >> /etc/apt/sources.list.d/jitsi-stable.list
+echo 'deb https://download.jitsi.org stable/' | sudo tee /etc/apt/sources.list.d/jitsi-stable.list
 wget -qO -  https://download.jitsi.org/jitsi-key.gpg.key | sudo apt-key add -
 ```
 ### Open ports in your firewall
@@ -81,11 +81,17 @@ See [the documentation of ice4j](https://github.com/jitsi/ice4j/blob/master/doc/
 for details.
 
 Default deployments on systems using systemd will have low default values for maximum processes and open files. If the used bridge will expect higher number of participants the default values need to be adjusted (the default values are good for less than 100 participants).
-To update the values edit `/etc/systemd/system.conf` and make sure you have the following values:
+To update the values edit `/etc/systemd/system.conf` and make sure you have the following values if values are smaller, if not do not update.
 ```
 DefaultLimitNOFILE=65000
 DefaultLimitNPROC=65000
 DefaultTasksMax=65000
+```
+To check values just run :
+```
+systemctl show --property DefaultLimitNPROC
+systemctl show --property DefaultLimitNOFILE
+systemctl show --property DefaultTasksMax
 ```
 To load the values and check them look [here](#systemd-details) for details.
 
