@@ -1,13 +1,12 @@
 // @flow
 
 import React, { Component } from 'react';
-import { connect } from '../../base/redux';
 
 import { createDeepLinkingPageEvent, sendAnalytics } from '../../analytics';
 import { translate } from '../../base/i18n';
 import { Platform } from '../../base/react';
+import { connect } from '../../base/redux';
 import { DialInSummary } from '../../invite';
-
 import { _TNS } from '../constants';
 import { generateDeepLinkingURL } from '../functions';
 import { renderPromotionalFooter } from '../renderPromotionalFooter';
@@ -125,21 +124,21 @@ class DeepLinkingMobilePage extends Component<Props> {
                     <a
                         { ...onOpenLinkProperties }
                         href = { this._generateDownloadURL() }
-                        onClick = { this._onDownloadApp }>
+                        onClick = { this._onDownloadApp }
+                        target = '_top'>
                         <button className = { downloadButtonClassName }>
                             { t(`${_TNS}.downloadApp`) }
                         </button>
-                        target = '_top'
                     </a>
                     <a
                         { ...onOpenLinkProperties }
                         className = { `${_SNS}__href` }
                         href = { generateDeepLinkingURL() }
-                        onClick = { this._onOpenApp }>
+                        onClick = { this._onOpenApp }
+                        target = '_top'>
                         {/* <button className = { `${_SNS}__button` }> */}
                         { t(`${_TNS}.openApp`) }
                         {/* </button> */}
-                        target = '_top'
                     </a>
                     { renderPromotionalFooter() }
                     <DialInSummary
