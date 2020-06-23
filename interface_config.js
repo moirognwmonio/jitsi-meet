@@ -208,7 +208,7 @@ var interfaceConfig = {
      *
      * @type {boolean}
      */
-    VIDEO_QUALITY_LABEL_DISABLED: false
+    VIDEO_QUALITY_LABEL_DISABLED: false,
 
     /**
      * When enabled, the kick participant button will not be presented for users without a JWT
