@@ -3,11 +3,11 @@
         "apps": [],
         "details": [
             {
-                "appID": "BQNXB4G3KQ.org.jitsi.JitsiMeet.ios",
+                "appID": "S6UPZG7ZR3.chat.rocket.ios",
                 "paths": [ "*" ]
             },
             {
-                "appID": "UPXU4CQZ5P.com.atlassian.JitsiMeet.ios",
+                "appID": "S6UPZG7ZR3.chat.rocket.reactnative",
                 "paths": [ "*" ]
             }
         ]
