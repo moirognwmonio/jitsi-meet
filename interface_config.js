@@ -88,6 +88,8 @@ var interfaceConfig = {
     DISPLAY_WELCOME_PAGE_CONTENT: false,
     DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
 
+    ENABLE_DIAL_OUT: true,
+
     ENABLE_FEEDBACK_ANIMATION: false, // Enables feedback star animation.
 
     FILM_STRIP_MAX_HEIGHT: 120,
@@ -174,7 +176,7 @@ var interfaceConfig = {
      * The name of the toolbar buttons to display in the toolbar. If present,
      * the button will display. Exceptions are "livestreaming" and "recording"
      * which also require being a moderator and some values in config.js to be
-     * enabled. Also, the "profile" button will not display for user's with a
+     * enabled. Also, the "profile" button will not display for users with a
      * jwt.
      */
     TOOLBAR_BUTTONS: [
@@ -264,6 +266,13 @@ var interfaceConfig = {
      INDICATOR_FONT_SIZES
      PHONE_NUMBER_REGEX
     */
+
+    // Allow all above example options to include a trailing comma and
+    // prevent fear when commenting out the last value.
+    // eslint-disable-next-line sort-keys
+    makeJsonParserHappy: 'even if last key had a trailing comma'
+
+    // No configuration value should follow this line.
 };
 
 /* eslint-enable no-unused-vars, no-var, max-len */
