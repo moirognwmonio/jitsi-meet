@@ -53,6 +53,7 @@ jobs:
             export PATH=~/.local/bin:$PATH
 
             aws s3 cp build/ s3://src-jitsi.rocket.chat/ --recursive
+            aws s3 cp ios/apple-app-site-association s3://src-jitsi.rocket.chat/apple-app-site-association
 
 workflows:
   version: 2
