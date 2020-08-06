@@ -38,6 +38,8 @@ var config = {
     clientNode: 'http://jitsi.org/jitsimeet',
 
     // The real JID of focus participant - can be overridden here
+    // Do not change username - FIXME: Make focus username configurable
+    // https://github.com/jitsi/jitsi-meet/issues/7376
     // focusUserJid: 'focus@auth.jitsi-meet.example.com',
 
     // OG externalConnectUrl: '//meet.jit.si/http-pre-bind',
@@ -117,12 +119,16 @@ var config = {
     // Sets the preferred target bitrate for the Opus audio codec by setting its
     // 'maxaveragebitrate' parameter. Currently not available in p2p mode.
     // Valid values are in the range 6000 to 510000
-    // opusMaxAvgBitrate: 20000,
+    // opusMaxAverageBitrate: 20000,
 
     // Video
 
     // Sets the preferred resolution (height) for local video. Defaults to 720.
     // resolution: 720,
+
+    // How many participants while in the tile view mode, before the receiving video quality is reduced from HD to SD.
+    // Use -1 to disable.
+    // maxFullResolutionParticipants: 2
 
     // w3c spec-compliant video constraints to use for video capture. Currently
     // used by browsers that return true from lib-jitsi-meet's
@@ -216,6 +222,22 @@ var config = {
 
     // Default value for the channel "last N" attribute. -1 for unlimited.
     channelLastN: -1,
+
+    // Provides a way to use different "last N" values based on the number of participants in the conference.
+    // The keys in an Object represent number of participants and the values are "last N" to be used when number of
+    // participants gets to or above the number.
+    //
+    // For the given example mapping, "last N" will be set to 20 as long as there are at least 5, but less than
+    // 29 participants in the call and it will be lowered to 15 when the 30th participant joins. The 'channelLastN'
+    // will be used as default until the first threshold is reached.
+    //
+    // lastNLimits: {
+    //     5: 20,
+    //     30: 15,
+    //     50: 10,
+    //     70: 5,
+    //     90: 2
+    // },
 
     // // Options for the recording limit notification.
     // recordingLimit: {
