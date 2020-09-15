@@ -131,7 +131,7 @@ var config = {
 
     // How many participants while in the tile view mode, before the receiving video quality is reduced from HD to SD.
     // Use -1 to disable.
-    // maxFullResolutionParticipants: 2
+    // maxFullResolutionParticipants: 2,
 
     // w3c spec-compliant video constraints to use for video capture. Currently
     // used by browsers that return true from lib-jitsi-meet's
@@ -516,6 +516,9 @@ var config = {
         //      "https://example.com/my-custom-analytics.js"
         ]
     },
+
+    // Logs that should go be passed through the 'log' event if a handler is defined for it
+    // apiLogLevels: ['warn', 'log', 'error', 'info', 'debug'],
 
     // Information about the jitsi-meet instance we are connecting to, including
     // the user region as seen by the server.
