@@ -75,6 +75,7 @@ const styles = {
         flexDirection: 'row',
         flexGrow: 0,
         justifyContent: 'center',
+        marginLeft: BUTTON_SIZE,
         marginBottom: BoxModel.margin / 2,
         paddingHorizontal: BoxModel.margin
     },
