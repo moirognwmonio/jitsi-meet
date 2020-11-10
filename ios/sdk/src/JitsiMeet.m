@@ -16,14 +16,12 @@
 
 #import <Intents/Intents.h>
 
-#import "Dropbox.h"
 #import "JitsiMeet+Private.h"
 #import "JitsiMeetConferenceOptions+Private.h"
 #import "JitsiMeetView+Private.h"
 #import "RCTBridgeWrapper.h"
 #import "ReactUtils.h"
 
-#import <RNGoogleSignin/RNGoogleSignin.h>
 #import <WebRTC/RTCLogging.h>
 
 
@@ -72,8 +70,6 @@
 
     _launchOptions = [launchOptions copy];
 
-    [Dropbox setAppKey];
-
     return YES;
 }
 
@@ -89,16 +85,6 @@
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-
-    if ([Dropbox application:app openURL:url options:options]) {
-        return YES;
-    }
-
-    if ([RNGoogleSignin application:app
-                            openURL:url
-                            options:options]) {
-        return YES;
-    }
 
     if (_customUrlScheme == nil || ![_customUrlScheme isEqualToString:url.scheme]) {
         return NO;

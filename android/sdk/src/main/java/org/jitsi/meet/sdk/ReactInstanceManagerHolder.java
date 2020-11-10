@@ -63,7 +63,6 @@ class ReactInstanceManagerHolder {
                 new AndroidSettingsModule(reactContext),
                 new AppInfoModule(reactContext),
                 new AudioModeModule(reactContext),
-                new DropboxModule(reactContext),
                 new ExternalAPIModule(reactContext),
                 new JavaScriptSandboxModule(reactContext),
                 new LocaleDetector(reactContext),
@@ -89,14 +88,6 @@ class ReactInstanceManagerHolder {
         options.setVideoEncoderFactory(new SoftwareVideoEncoderFactory());
 
         nativeModules.add(new WebRTCModule(reactContext, options));
-
-        try {
-            Class<?> amplitudeModuleClass = Class.forName("org.jitsi.meet.sdk.AmplitudeModule");
-            Constructor constructor = amplitudeModuleClass.getConstructor(ReactApplicationContext.class);
-            nativeModules.add((NativeModule)constructor.newInstance(reactContext));
-        } catch (Exception e) {
-            // Ignore any error, the module is not compiled when LIBRE_BUILD is enabled.
-        }
 
         return nativeModules;
     }
@@ -186,7 +177,6 @@ class ReactInstanceManagerHolder {
         List<ReactPackage> packages
             = new ArrayList<>(Arrays.asList(
                 new com.BV.LinearGradient.LinearGradientPackage(),
-                new com.calendarevents.CalendarEventsPackage(),
                 new com.corbt.keepawake.KCKeepAwakePackage(),
                 new com.facebook.react.shell.MainReactPackage(),
                 new com.horcrux.svg.SvgPackage(),
@@ -207,14 +197,6 @@ class ReactInstanceManagerHolder {
                         return ReactInstanceManagerHolder.createViewManagers(reactContext);
                     }
                 }));
-
-        try {
-            Class<?> googlePackageClass = Class.forName("co.apptailor.googlesignin.RNGoogleSigninPackage");
-            Constructor constructor = googlePackageClass.getConstructor();
-            packages.add((ReactPackage)constructor.newInstance());
-        } catch (Exception e) {
-            // Ignore any error, the module is not compiled when LIBRE_BUILD is enabled.
-        }
 
         // Use the Hermes JavaScript engine.
         HermesExecutorFactory jsFactory = new HermesExecutorFactory();
