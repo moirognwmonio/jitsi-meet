@@ -84,6 +84,7 @@ const styles = {
      * The style of the root/top-level {@link Container} of {@link Toolbox}.
      */
     toolbox: {
+        padding: 16,
         flexDirection: 'column',
         flexGrow: 0
     }

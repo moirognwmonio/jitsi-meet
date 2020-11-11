@@ -140,6 +140,7 @@ export default {
     },
 
     roomName: {
+        marginTop: 16,
         color: ColorPalette.white,
         fontSize: 17,
         fontWeight: '400'
