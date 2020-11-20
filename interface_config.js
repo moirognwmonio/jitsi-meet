@@ -46,10 +46,9 @@ var interfaceConfig = {
 
     DEFAULT_BACKGROUND: '#474747',
     DEFAULT_LOCAL_DISPLAY_NAME: 'me',
-    DEFAULT_LOGO_URL: 'images/watermark.png',
+    DEFAULT_LOGO_URL: 'images/watermark.svg',
     DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow User',
-
-    DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/watermark.png',
+    DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/watermark.svg',
     DISABLE_DOMINANT_SPEAKER_INDICATOR: false,
 
     DISABLE_FOCUS_INDICATOR: false,
@@ -86,6 +85,8 @@ var interfaceConfig = {
      */
     DISABLE_VIDEO_BACKGROUND: false,
 
+    DISPLAY_WELCOME_FOOTER: true,
+    DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD: false,
     DISPLAY_WELCOME_PAGE_CONTENT: false,
     DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
 
@@ -94,11 +95,6 @@ var interfaceConfig = {
     ENABLE_FEEDBACK_ANIMATION: false, // Enables feedback star animation.
 
     FILM_STRIP_MAX_HEIGHT: 120,
-
-    /**
-     * Whether to only show the filmstrip (and hide the toolbar).
-     */
-    filmStripOnly: false,
 
     GENERATE_ROOMNAMES_ON_WELCOME_PAGE: true,
 
@@ -136,6 +132,21 @@ var interfaceConfig = {
      */
     MOBILE_APP_PROMO: true,
 
+    /**
+     * Specify custom URL for downloading android mobile app.
+     */
+    MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=chat.rocket.android',
+
+    /**
+     * Specify custom URL for downloading f droid app.
+     */
+    MOBILE_DOWNLOAD_LINK_F_DROID: 'https://f-droid.org/en/packages/org.jitsi.meet/',
+
+    /**
+     * Specify URL for downloading ios mobile app.
+     */
+    MOBILE_DOWNLOAD_LINK_IOS: 'https://itunes.apple.com/us/app/rocket-chat/id1148741252',
+
     NATIVE_APP_NAME: 'Rocket.Chat',
 
     // Names of browsers which should show a warning stating the current browser
@@ -168,7 +179,6 @@ var interfaceConfig = {
     SHOW_JITSI_WATERMARK: false,
     SHOW_POWERED_BY: false,
     SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-    SHOW_WATERMARK_FOR_GUESTS: false, // if watermark is disabled by default, it can be shown only for guests
 
     /*
      * If indicated some of the error dialogs may point to the support URL for
@@ -223,25 +233,10 @@ var interfaceConfig = {
     VIDEO_QUALITY_LABEL_DISABLED: false,
 
     /**
-     * When enabled, the kick participant button will not be presented for users without a JWT
-     */
-    // HIDE_KICK_BUTTON_FOR_GUESTS: false,
-
-    /**
      * How many columns the tile view can expand to. The respected range is
      * between 1 and 5.
      */
     // TILE_VIEW_MAX_COLUMNS: 5,
-
-    /**
-     * Specify custom URL for downloading android mobile app.
-     */
-    MOBILE_DOWNLOAD_LINK_ANDROID: 'https://play.google.com/store/apps/details?id=chat.rocket.android',
-
-    /**
-     * Specify URL for downloading ios mobile app.
-     */
-    MOBILE_DOWNLOAD_LINK_IOS: 'https://itunes.apple.com/us/app/rocket-chat/id1148741252',
 
     /**
      * Specify Firebase dynamic link properties for the mobile apps.
