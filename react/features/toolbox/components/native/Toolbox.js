@@ -104,6 +104,9 @@ class Toolbox extends PureComponent<Props> {
                 accessibilityRole = 'toolbar'
                 pointerEvents = 'box-none'
                 style = { styles.toolbar }>
+                <ChatButton
+                    styles = { buttonStylesBorderless }
+                    toggledStyles = { this._getChatButtonToggledStyle(toggledButtonStyles) } />
                 <AudioMuteButton
                     styles = { buttonStyles }
                     toggledStyles = { toggledButtonStyles } />

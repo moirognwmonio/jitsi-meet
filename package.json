@@ -35,7 +35,7 @@
     "@jitsi/js-utils": "1.0.1",
     "@microsoft/microsoft-graph-client": "1.1.0",
     "@react-native-community/async-storage": "1.3.4",
-    "@react-native-community/netinfo": "4.1.5",
+    "@react-native-community/netinfo": "^5.9.9",
     "@svgr/webpack": "4.3.2",
     "@tensorflow-models/body-pix": "2.0.4",
     "@tensorflow/tfjs": "1.5.1",
@@ -124,6 +124,7 @@
     "jetifier": "1.6.4",
     "metro-react-native-babel-preset": "0.56.0",
     "node-sass": "4.14.1",
+    "patch-package": "^6.2.2",
     "string-replace-loader": "2.1.1",
     "style-loader": "0.19.0",
     "unorm": "1.6.0",
@@ -139,7 +140,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint . && flow",
-    "postinstall": "jetify",
+    "postinstall": "patch-package && jetify",
     "validate": "npm ls"
   },
   "browser": {

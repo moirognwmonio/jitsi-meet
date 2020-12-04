@@ -75,9 +75,6 @@ const styles = {
         flexDirection: 'row',
         flexGrow: 0,
         justifyContent: 'center',
-        // Since we hide the chat button we want to centralize the toolbox
-        // Chat button size + marginHorizontal * 2
-        marginLeft: BUTTON_SIZE + 14,
         marginBottom: BoxModel.margin / 2,
         paddingHorizontal: BoxModel.margin
     },
@@ -86,7 +83,6 @@ const styles = {
      * The style of the root/top-level {@link Container} of {@link Toolbox}.
      */
     toolbox: {
-        padding: 16,
         flexDirection: 'column',
         flexGrow: 0
     }
