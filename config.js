@@ -159,7 +159,7 @@ var config = {
     enableLayerSuspension: true,
 
     // Every participant after the Nth will start video muted.
-    startVideoMuted: 8,
+    startVideoMuted: 6,
 
     // Start calls with video muted. Unlike the option above, this one is only
     // applied locally. FIXME: having these 2 options is confusing.
@@ -227,7 +227,7 @@ var config = {
     // Misc
 
     // Default value for the channel "last N" attribute. -1 for unlimited.
-    channelLastN: 8,
+    channelLastN: 6,
 
     // Provides a way to use different "last N" values based on the number of participants in the conference.
     // The keys in an Object represent number of participants and the values are "last N" to be used when number of
