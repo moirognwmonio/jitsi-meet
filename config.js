@@ -159,7 +159,7 @@ var config = {
     enableLayerSuspension: true,
 
     // Every participant after the Nth will start video muted.
-    startVideoMuted: 5,
+    startVideoMuted: 6,
 
     // Start calls with video muted. Unlike the option above, this one is only
     // applied locally. FIXME: having these 2 options is confusing.
@@ -227,7 +227,7 @@ var config = {
     // Misc
 
     // Default value for the channel "last N" attribute. -1 for unlimited.
-    channelLastN: 5,
+    channelLastN: 6,
 
     // Provides a way to use different "last N" values based on the number of participants in the conference.
     // The keys in an Object represent number of participants and the values are "last N" to be used when number of
@@ -265,11 +265,11 @@ var config = {
     //    // are the max.bitrates to be set on that particular type of stream. The actual send may vary based on
     //    // the available bandwidth calculated by the browser, but it will be capped by the values specified here.
     //    // This is currently not implemented on app based clients on mobile.
-    maxBitratesVideo: {
-            low: 200000,
-            standard: 500000,
-            high: 1000000
-        },
+    //    maxBitratesVideo: {
+    //        low: 200000,
+    //        standard: 500000,
+    //        high: 1500000
+    //    },
     //
     //    // The options can be used to override default thresholds of video thumbnail heights corresponding to
     //    // the video quality levels used in the application. At the time of this writing the allowed levels are:
