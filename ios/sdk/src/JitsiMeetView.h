@@ -37,4 +37,10 @@
  */
 - (void)leave;
 
+- (void)hangUp;
+
+- (void)setAudioMuted:(BOOL)muted;
+
+- (void)sendEndpointTextMessage:(NSString*)to :(NSString*)message;
+
 @end

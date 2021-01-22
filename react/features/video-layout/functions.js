@@ -1,5 +1,6 @@
 // @flow
 
+import { getFeatureFlag, TILE_VIEW_ENABLED } from '../base/flags';
 import { getPinnedParticipant, getParticipantCount } from '../base/participants';
 import { isYoutubeVideoPlaying } from '../youtube-player/functions';
 
@@ -79,6 +80,13 @@ export function shouldDisplayTileView(state: Object = {}) {
     // But it's a special case too, as we don't even render the button,
     // see TileViewButton component.
     if (participantCount < 2) {
+        return false;
+    }
+
+    const tileViewEnabledFeatureFlag = getFeatureFlag(state, TILE_VIEW_ENABLED, true);
+    const { disableTileView } = state['features/base/config'];
+
+    if (disableTileView || !tileViewEnabledFeatureFlag) {
         return false;
     }
 
