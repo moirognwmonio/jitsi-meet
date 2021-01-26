@@ -333,6 +333,9 @@ var config = {
     // UI
     //
 
+    // Disables responsive tiles.
+    // disableResponsiveTiles: false,
+
     // Hides lobby button
     // hideLobbyButton: false,
 
