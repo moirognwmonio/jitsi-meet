@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 
 import { translate } from '../../../../base/i18n';
-import { IconMicrophoneEmpty, IconVolumeEmpty } from '../../../../base/icons';
+import { IconMicrophoneHollow, IconVolumeEmpty } from '../../../../base/icons';
 import JitsiMeetJS from '../../../../base/lib-jitsi-meet';
 import { equals } from '../../../../base/redux';
 import { createLocalAudioTracks } from '../../../functions';
@@ -13,6 +13,20 @@ import MicrophoneEntry from './MicrophoneEntry';
 import SpeakerEntry from './SpeakerEntry';
 
 const browser = JitsiMeetJS.util.browser;
+
+/**
+ * Translates the default device label into a more user friendly one.
+ *
+ * @param {string} deviceId - The device Id.
+ * @param {string} label - The device label.
+ * @param {Function} t - The translation function.
+ * @returns {string}
+ */
+function transformDefaultDeviceLabel(deviceId, label, t) {
+    return deviceId === 'default'
+        ? t('settings.sameAsSystem', { label: label.replace('Default - ', '') })
+        : label;
+}
 
 export type Props = {
 
@@ -64,7 +78,7 @@ type State = {
 }
 
 /**
- * Implements a React {@link Component} which displayes a list of all
+ * Implements a React {@link Component} which displays a list of all
  * the audio input & output devices to choose from.
  *
  * @extends Component
@@ -125,10 +139,12 @@ class AudioSettingsContent extends Component<Props, State> {
      *
      * @param {Object} data - An object with the deviceId, jitsiTrack & label of the microphone.
      * @param {number} index - The index of the element, used for creating a key.
+     * @param {Function} t - The translation function.
      * @returns {React$Node}
      */
-    _renderMicrophoneEntry(data, index) {
-        const { deviceId, label, jitsiTrack, hasError } = data;
+    _renderMicrophoneEntry(data, index, t) {
+        const { deviceId, jitsiTrack, hasError } = data;
+        const label = transformDefaultDeviceLabel(deviceId, data.label, t);
         const isSelected = deviceId === this.props.currentMicDeviceId;
 
         return (
@@ -149,10 +165,12 @@ class AudioSettingsContent extends Component<Props, State> {
      *
      * @param {Object} data - An object with the deviceId and label of the speaker.
      * @param {number} index - The index of the element, used for creating a key.
+     * @param {Function} t - The translation function.
      * @returns {React$Node}
      */
-    _renderSpeakerEntry(data, index) {
-        const { deviceId, label } = data;
+    _renderSpeakerEntry(data, index, t) {
+        const { deviceId } = data;
+        const label = transformDefaultDeviceLabel(deviceId, data.label, t);
         const key = `se-${index}`;
 
         return (
@@ -172,7 +190,7 @@ class AudioSettingsContent extends Component<Props, State> {
      * @returns {void}
      */
     async _setTracks() {
-        if (browser.isSafari()) {
+        if (browser.isWebKitBased()) {
 
             // It appears that at the time of this writing, creating audio tracks blocks the browser's main thread for
             // long time on safari. Wasn't able to confirm which part of track creation does the blocking exactly, but
@@ -182,9 +200,7 @@ class AudioSettingsContent extends Component<Props, State> {
 
         this._disposeTracks(this.state.audioTracks);
 
-        const audioTracks = await createLocalAudioTracks(
-            this.props.microphoneDevices
-        );
+        const audioTracks = await createLocalAudioTracks(this.props.microphoneDevices, 5000);
 
         if (this._componentWasUnmounted) {
             this._disposeTracks(audioTracks);
@@ -250,18 +266,22 @@ class AudioSettingsContent extends Component<Props, State> {
             <div>
                 <div className = 'audio-preview-content'>
                     <AudioSettingsHeader
-                        IconComponent = { IconMicrophoneEmpty }
+                        IconComponent = { IconMicrophoneHollow }
                         text = { t('settings.microphones') } />
                     {this.state.audioTracks.map((data, i) =>
-                        this._renderMicrophoneEntry(data, i),
+                        this._renderMicrophoneEntry(data, i, t),
                     )}
                     { outputDevices.length > 0 && (
-                        <AudioSettingsHeader
-                            IconComponent = { IconVolumeEmpty }
-                            text = { t('settings.speakers') } />)
+                        <>
+                            <hr className = 'audio-preview-hr' />
+                            <AudioSettingsHeader
+                                IconComponent = { IconVolumeEmpty }
+                                text = { t('settings.speakers') } />
+                        </>
+                    )
                     }
                     {outputDevices.map((data, i) =>
-                        this._renderSpeakerEntry(data, i),
+                        this._renderSpeakerEntry(data, i, t),
                     )}
                 </div>
             </div>

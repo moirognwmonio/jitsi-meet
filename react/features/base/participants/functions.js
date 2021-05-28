@@ -186,6 +186,17 @@ export function getParticipantDisplayName(
 }
 
 /**
+ * Curried version of getParticipantDisplayName.
+ *
+ * @see {@link getParticipantDisplayName}
+ * @param {string} id - The ID of the participant's display name to retrieve.
+ * @returns {Function}
+ */
+export const getParticipantDisplayNameWithId = (id: string) =>
+    (state: Object | Function) =>
+        getParticipantDisplayName(state, id);
+
+/**
  * Returns the presence status of a participant associated with the passed id.
  *
  * @param {(Function|Object)} stateful - The (whole) redux state, or redux's
@@ -360,10 +371,10 @@ export function shouldRenderParticipantVideo(stateful: Object | Function, id: st
     }
 
     /* Last, check if the participant is sharing their screen and they are on stage. */
-    const screenShares = state['features/video-layout'].screenShares || [];
+    const remoteScreenShares = state['features/video-layout'].remoteScreenShares || [];
     const largeVideoParticipantId = state['features/large-video'].participantId;
     const participantIsInLargeVideoWithScreen
-        = participant.id === largeVideoParticipantId && screenShares.includes(participant.id);
+        = participant.id === largeVideoParticipantId && remoteScreenShares.includes(participant.id);
 
     return participantIsInLargeVideoWithScreen;
 }
