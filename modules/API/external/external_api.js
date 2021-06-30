@@ -41,6 +41,7 @@ const commands = {
     password: 'password',
     pinParticipant: 'pin-participant',
     resizeLargeVideo: 'resize-large-video',
+    sendChatMessage: 'send-chat-message',
     sendEndpointTextMessage: 'send-endpoint-text-message',
     sendTones: 'send-tones',
     setLargeVideoParticipant: 'set-large-video-participant',
@@ -60,6 +61,7 @@ const commands = {
     toggleRaiseHand: 'toggle-raise-hand',
     toggleShareScreen: 'toggle-share-screen',
     toggleTileView: 'toggle-tile-view',
+    toggleVirtualBackgroundDialog: 'toggle-virtual-background',
     toggleVideo: 'toggle-video'
 };
 
@@ -84,6 +86,9 @@ const events = {
     'incoming-message': 'incomingMessage',
     'log': 'log',
     'mic-error': 'micError',
+    'mouse-enter': 'mouseEnter',
+    'mouse-leave': 'mouseLeave',
+    'mouse-move': 'mouseMove',
     'outgoing-message': 'outgoingMessage',
     'participant-joined': 'participantJoined',
     'participant-kicked-out': 'participantKickedOut',
