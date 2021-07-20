@@ -521,6 +521,9 @@ var config = {
         // connection.
         enabled: false,
 
+        // Enable unified plan implementation support on Chromium for p2p connection.
+        // enableUnifiedOnChrome: false,
+
         // Sets the ICE transport policy for the p2p connection. At the time
         // of this writing the list of possible values are 'all' and 'relay',
         // but that is subject to change in the future. The enum is defined in
@@ -606,6 +609,9 @@ var config = {
     // Disables the sounds that play when other participants join or leave the
     // conference (if set to true, these sounds will not be played).
     // disableJoinLeaveSounds: false,
+
+    // Disables the sounds that play when a chat message is received.
+    // disableIncomingMessageSound: false,
 
     // Information for the chrome extension banner
     // chromeExtensionBanner: {
@@ -750,6 +756,18 @@ var config = {
     // is not persisting the local storage inside the iframe.
     // useHostPageLocalStorage: true,
 
+    // etherpad ("shared document") integration.
+    //
+
+    // If set, add a "Open shared document" link to the bottom right menu that
+    // will open an etherpad document.
+    // etherpad_base: 'https://your-etherpad-installati.on/p/',
+
+    // If etherpad_base is set, and useRoomAsSharedDocumentName is set to true,
+    // open a pad with the name of the room (lowercased) instead of a pad with a
+    // random UUID.
+    // useRoomAsSharedDocumentName: true,
+
     // List of undocumented settings used in jitsi-meet
     /**
      _immediateReloadThreshold
@@ -762,7 +780,6 @@ var config = {
      dialOutCodesUrl
      disableRemoteControl
      displayJids
-     etherpad_base
      externalConnectUrl
      firefox_fake_device
      googleApiApplicationClientID
