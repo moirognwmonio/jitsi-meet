@@ -20,8 +20,12 @@ class LobbyScreen extends AbstractLobbyScreen {
      * @inheritdoc
      */
     render() {
+        const { showCopyUrlButton, t } = this.props;
+
         return (
-            <PreMeetingScreen title = { this.props.t(this._getScreenTitleKey()) }>
+            <PreMeetingScreen
+                showCopyUrlButton = { showCopyUrlButton }
+                title = { t(this._getScreenTitleKey()) }>
                 { this._renderContent() }
             </PreMeetingScreen>
         );
@@ -92,15 +96,11 @@ class LobbyScreen extends AbstractLobbyScreen {
         const { t } = this.props;
 
         return (
-            <div className = 'participant-info'>
-                <div className = 'form'>
-                    <InputField
-                        onChange = { this._onChangeDisplayName }
-                        placeHolder = { t('lobby.nameField') }
-                        testId = 'lobby.nameField'
-                        value = { displayName } />
-                </div>
-            </div>
+            <InputField
+                onChange = { this._onChangeDisplayName }
+                placeHolder = { t('lobby.nameField') }
+                testId = 'lobby.nameField'
+                value = { displayName } />
         );
     }
 
@@ -113,15 +113,13 @@ class LobbyScreen extends AbstractLobbyScreen {
         const { _passwordJoinFailed, t } = this.props;
 
         return (
-            <div className = 'form'>
-                <InputField
-                    className = { _passwordJoinFailed ? 'error' : '' }
-                    onChange = { this._onChangePassword }
-                    placeHolder = { _passwordJoinFailed ? t('lobby.invalidPassword') : t('lobby.passwordField') }
-                    testId = 'lobby.password'
-                    type = 'password'
-                    value = { this.state.password } />
-            </div>
+            <InputField
+                className = { _passwordJoinFailed ? 'error' : '' }
+                onChange = { this._onChangePassword }
+                placeHolder = { _passwordJoinFailed ? t('lobby.invalidPassword') : t('lobby.passwordField') }
+                testId = 'lobby.password'
+                type = 'password'
+                value = { this.state.password } />
         );
     }
 
@@ -158,7 +156,7 @@ class LobbyScreen extends AbstractLobbyScreen {
      * @inheritdoc
      */
     _renderStandardButtons() {
-        const { _knocking, t } = this.props;
+        const { _knocking, _renderPassword, t } = this.props;
 
         return (
             <>
@@ -169,12 +167,12 @@ class LobbyScreen extends AbstractLobbyScreen {
                     type = 'primary'>
                     { t('lobby.knockButton') }
                 </ActionButton> }
-                <ActionButton
+                {_renderPassword && <ActionButton
                     onClick = { this._onSwitchToPasswordMode }
                     testId = 'lobby.enterPasswordButton'
                     type = 'secondary'>
                     { t('lobby.enterPasswordButton') }
-                </ActionButton>
+                </ActionButton> }
             </>
         );
     }

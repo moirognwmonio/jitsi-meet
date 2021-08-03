@@ -6,6 +6,7 @@ local ext_events = module:require "ext_events"
 local st = require "util.stanza";
 local socket = require "socket";
 local json = require "util.json";
+local um_is_admin = require "core.usermanager".is_admin;
 
 -- we use async to detect Prosody 0.10 and earlier
 local have_async = pcall(require, "util.async");
@@ -21,6 +22,10 @@ if muc_component_host == nil then
 end
 
 log("info", "Starting speakerstats for %s", muc_component_host);
+
+local function is_admin(jid)
+    return um_is_admin(jid, module.host);
+end
 
 -- receives messages from client currently connected to the room
 -- clients indicates their own dominant speaker events
@@ -38,6 +43,11 @@ function on_message(event)
 
         if not room then
             log("warn", "No room found %s", roomAddress);
+            return false;
+        end
+ 
+        if not room.speakerStats then
+            log("warn", "No speakerStats found for %s", roomAddress);
             return false;
         end
 
@@ -88,8 +98,7 @@ end
 -- saves start time if it is new dominat speaker
 -- or calculates and accumulates time of speaking
 function SpeakerStats:setDominantSpeaker(isNowDominantSpeaker)
-    log("debug",
-        "set isDominant %s for %s", tostring(isNowDominantSpeaker), self.nick);
+    -- log("debug", "set isDominant %s for %s", tostring(isNowDominantSpeaker), self.nick);
 
     if not self:isDominantSpeaker() and isNowDominantSpeaker then
         self._dominantSpeakerStart = socket.gettime()*1000;
@@ -122,9 +131,9 @@ end
 
 -- Create SpeakerStats object for the joined user
 function occupant_joined(event)
-    local room = event.room;
+    local occupant, room = event.occupant, event.room;
 
-    if is_healthcheck_room(room.jid) then
+    if is_healthcheck_room(room.jid) or is_admin(occupant.bare_jid) then
         return;
     end
 
@@ -141,24 +150,24 @@ function occupant_joined(event)
                 -- skip reporting those without a nick('dominantSpeakerId')
                 -- and skip focus if sneaked into the table
                 if values.nick ~= nil and values.nick ~= 'focus' then
-                    local resultSpeakerStats = {};
-                    local totalDominantSpeakerTime
-                        = values.totalDominantSpeakerTime;
+                    local totalDominantSpeakerTime = values.totalDominantSpeakerTime;
+                    if totalDominantSpeakerTime > 0 or room:get_occupant_jid(jid) == nil then
+                        -- before sending we need to calculate current dominant speaker state
+                        if values:isDominantSpeaker() then
+                            local timeElapsed = math.floor(socket.gettime()*1000 - values._dominantSpeakerStart);
+                            totalDominantSpeakerTime = totalDominantSpeakerTime + timeElapsed;
+                        end
 
-                    -- before sending we need to calculate current dominant speaker
-                    -- state
-                    if values:isDominantSpeaker() then
-                        local timeElapsed = math.floor(
-                            socket.gettime()*1000 - values._dominantSpeakerStart);
-                        totalDominantSpeakerTime = totalDominantSpeakerTime
-                            + timeElapsed;
+                        users_json[values.nick] =  {
+                            displayName = values.displayName,
+                            totalDominantSpeakerTime = totalDominantSpeakerTime
+                        };
                     end
-
-                    resultSpeakerStats.displayName = values.displayName;
-                    resultSpeakerStats.totalDominantSpeakerTime
-                        = totalDominantSpeakerTime;
-                    users_json[values.nick] = resultSpeakerStats;
                 end
+            end
+
+            if next(users_json) == nil then
+                return;
             end
 
             local body_json = {};
@@ -185,6 +194,10 @@ function occupant_leaving(event)
     local room = event.room;
 
     if is_healthcheck_room(room.jid) then
+        return;
+    end
+ 
+    if not room.speakerStats then
         return;
     end
 

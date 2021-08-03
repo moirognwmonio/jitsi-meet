@@ -1,11 +1,10 @@
 // @flow
 
 import React from 'react';
-import { NativeModules, SafeAreaView, StatusBar } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { NativeModules, SafeAreaView, StatusBar, View } from 'react-native';
 
 import { appNavigate } from '../../../app/actions';
-import { PIP_ENABLED, getFeatureFlag } from '../../../base/flags';
+import { PIP_ENABLED, FULLSCREEN_ENABLED, getFeatureFlag } from '../../../base/flags';
 import { Container, LoadingIndicator, TintedView } from '../../../base/react';
 import { connect } from '../../../base/redux';
 import { ASPECT_RATIO_NARROW } from '../../../base/responsive-ui/constants';
@@ -33,10 +32,9 @@ import {
 } from '../AbstractConference';
 import type { AbstractProps } from '../AbstractConference';
 
-import Labels from './Labels';
 import LonelyMeetingExperience from './LonelyMeetingExperience';
 import NavigationBar from './NavigationBar';
-import styles, { NAVBAR_GRADIENT_COLORS } from './styles';
+import styles from './styles';
 
 
 /**
@@ -66,6 +64,11 @@ type Props = AbstractProps & {
      * Set to {@code true} when the filmstrip is currently visible.
      */
     _filmstripVisible: boolean,
+
+    /**
+     * The indicator which determines whether fullscreen (immersive) mode is enabled.
+     */
+    _fullscreenEnabled: boolean,
 
     /**
      * The ID of the participant currently on stage (if any)
@@ -144,12 +147,14 @@ class Conference extends AbstractConference<Props, *> {
      * @returns {ReactElement}
      */
     render() {
+        const { _fullscreenEnabled } = this.props;
+
         return (
             <Container style = { styles.conference }>
                 <StatusBar
                     barStyle = 'light-content'
-                    hidden = { true }
-                    translucent = { true } />
+                    hidden = { _fullscreenEnabled }
+                    translucent = { _fullscreenEnabled } />
                 { this._renderContent() }
             </Container>
         );
@@ -230,17 +235,11 @@ class Conference extends AbstractConference<Props, *> {
      */
     _renderContent() {
         const {
-            _aspectRatio,
             _connecting,
-            _filmstripVisible,
             _largeVideoParticipantId,
             _reducedUI,
-            _shouldDisplayTileView,
-            _toolboxVisible
+            _shouldDisplayTileView
         } = this.props;
-        const showGradient = _toolboxVisible;
-        const applyGradientStretching
-            = _filmstripVisible && _aspectRatio === ASPECT_RATIO_NARROW && !_shouldDisplayTileView;
 
         if (_reducedUI) {
             return this._renderContentForReducedUi();
@@ -272,27 +271,9 @@ class Conference extends AbstractConference<Props, *> {
                         </TintedView>
                 }
 
-                <SafeAreaView
+                <View
                     pointerEvents = 'box-none'
                     style = { styles.toolboxAndFilmstripContainer }>
-
-                    { showGradient && <LinearGradient
-                        colors = { NAVBAR_GRADIENT_COLORS }
-                        end = {{
-                            x: 0.0,
-                            y: 0.0
-                        }}
-                        pointerEvents = 'none'
-                        start = {{
-                            x: 0.0,
-                            y: 1.0
-                        }}
-                        style = { [
-                            styles.bottomGradient,
-                            applyGradientStretching ? styles.gradientStretchBottom : undefined
-                        ] } />}
-
-                    <Labels />
 
                     <Captions onPress = { this._onClick } />
 
@@ -302,22 +283,8 @@ class Conference extends AbstractConference<Props, *> {
 
                     <LonelyMeetingExperience />
 
-                    {/*
-                      * The Toolbox is in a stacking layer below the Filmstrip.
-                      */}
-                    <Toolbox />
-
-                    {/*
-                      * The Filmstrip is in a stacking layer above the
-                      * LargeVideo. The LargeVideo and the Filmstrip form what
-                      * the Web/React app calls "videospace". Presumably, the
-                      * name and grouping stem from the fact that these two
-                      * React Components depict the videos of the conference's
-                      * participants.
-                      */
-                        _shouldDisplayTileView ? undefined : <Filmstrip />
-                    }
-                </SafeAreaView>
+                    { _shouldDisplayTileView || <><Filmstrip /><Toolbox /></> }
+                </View>
 
                 <SafeAreaView
                     pointerEvents = 'box-none'
@@ -332,6 +299,7 @@ class Conference extends AbstractConference<Props, *> {
                 { this._renderConferenceNotification() }
 
                 { this._renderConferenceModals() }
+                {_shouldDisplayTileView && <Toolbox />}
             </>
         );
     }
@@ -442,6 +410,7 @@ function _mapStateToProps(state) {
         _calendarEnabled: false,
         _connecting: Boolean(connecting_),
         _filmstripVisible: isFilmstripVisible(state),
+        _fullscreenEnabled: getFeatureFlag(state, FULLSCREEN_ENABLED, true),
         _largeVideoParticipantId: state['features/large-video'].participantId,
         _pictureInPictureEnabled: getFeatureFlag(state, PIP_ENABLED),
         _reducedUI: reducedUI,

@@ -12,6 +12,8 @@ import {
     isLocalParticipantModerator
 } from '../../../base/participants';
 import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
+import { maybeShowPremiumFeatureDialog } from '../../../jaas/actions';
+import { FEATURES } from '../../../jaas/constants';
 import { getActiveSession } from '../../functions';
 
 import { StartRecordingDialog, StopRecordingDialog } from './_';
@@ -74,7 +76,7 @@ export default class AbstractRecordButton<P: Props> extends AbstractButton<P, *>
      * @protected
      * @returns {void}
      */
-    _handleClick() {
+    async _handleClick() {
         const { _isRecordingRunning, dispatch } = this.props;
 
         sendAnalytics(createToolbarEvent(
@@ -84,9 +86,13 @@ export default class AbstractRecordButton<P: Props> extends AbstractButton<P, *>
                 type: JitsiRecordingConstants.mode.FILE
             }));
 
-        dispatch(openDialog(
-            _isRecordingRunning ? StopRecordingDialog : StartRecordingDialog
-        ));
+        const dialogShown = await dispatch(maybeShowPremiumFeatureDialog(FEATURES.RECORDING));
+
+        if (!dialogShown) {
+            dispatch(openDialog(
+                _isRecordingRunning ? StopRecordingDialog : StartRecordingDialog
+            ));
+        }
     }
 
     /**
@@ -153,13 +159,7 @@ export function _mapStateToProps(state: Object, ownProps: Props): Object {
             if (!visible && !_disabled) {
                 _disabled = true;
                 visible = true;
-
-                // button and tooltip
-                if (state['features/base/jwt'].isGuest) {
-                    _tooltip = 'dialog.recordingDisabledForGuestTooltip';
-                } else {
-                    _tooltip = 'dialog.recordingDisabledTooltip';
-                }
+                _tooltip = 'dialog.recordingDisabledTooltip';
             }
         }
     }

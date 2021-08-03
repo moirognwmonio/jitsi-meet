@@ -21,6 +21,8 @@
 #import "JitsiMeetView+Private.h"
 #import "RCTBridgeWrapper.h"
 #import "ReactUtils.h"
+#import "RNSplashScreen.h"
+#import "ScheenshareEventEmiter.h"
 
 #import <WebRTC/RTCLogging.h>
 
@@ -28,6 +30,7 @@
 @implementation JitsiMeet {
     RCTBridgeWrapper *_bridgeWrapper;
     NSDictionary *_launchOptions;
+    ScheenshareEventEmiter *_screenshareEventEmiter;
 }
 
 #pragma mak - This class is a singleton
@@ -47,6 +50,9 @@
     if (self = [super init]) {
         // Initialize the on and only bridge for interfacing with React Native.
         _bridgeWrapper = [[RCTBridgeWrapper alloc] init];
+        
+        // Initialize the listener for handling start/stop screensharing notifications.
+        _screenshareEventEmiter = [[ScheenshareEventEmiter alloc] init];
 
         // Register a fatal error handler for React.
         registerReactFatalErrorHandler();
@@ -169,6 +175,10 @@
     return nil;
 }
 
+- (void)showSplashScreen:(UIView*)rootView {
+    [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
+}
+
 #pragma mark - Property getter / setters
 
 - (NSArray<NSString *> *)universalLinkDomains {
@@ -192,6 +202,10 @@
 
 - (RCTBridge *)getReactBridge {
     return _bridgeWrapper.bridge;
+}
+
+- (ExternalAPI *)getExternalAPI {
+    return [_bridgeWrapper.bridge moduleForClass:ExternalAPI.class];
 }
 
 @end
