@@ -3,8 +3,13 @@
 import { openDialog } from '../../../base/dialog';
 import { IconLiveStreaming } from '../../../base/icons';
 import { JitsiRecordingConstants } from '../../../base/lib-jitsi-meet';
-import { getLocalParticipant } from '../../../base/participants';
+import {
+    getLocalParticipant,
+    isLocalParticipantModerator
+} from '../../../base/participants';
 import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
+import { maybeShowPremiumFeatureDialog } from '../../../jaas/actions';
+import { FEATURES } from '../../../jaas/constants';
 import { getActiveSession } from '../../functions';
 
 import {
@@ -70,12 +75,16 @@ export default class AbstractLiveStreamButton<P: Props> extends AbstractButton<P
      * @protected
      * @returns {void}
      */
-    _handleClick() {
+    async _handleClick() {
         const { _isLiveStreamRunning, dispatch } = this.props;
 
-        dispatch(openDialog(
-            _isLiveStreamRunning ? StopLiveStreamDialog : StartLiveStreamDialog
-        ));
+        const dialogShown = await dispatch(maybeShowPremiumFeatureDialog(FEATURES.RECORDING));
+
+        if (!dialogShown) {
+            dispatch(openDialog(
+                _isLiveStreamRunning ? StopLiveStreamDialog : StartLiveStreamDialog
+            ));
+        }
     }
 
     /**
@@ -125,13 +134,14 @@ export function _mapStateToProps(state: Object, ownProps: Props) {
         // If the containing component provides the visible prop, that is one
         // above all, but if not, the button should be autonomus and decide on
         // its own to be visible or not.
+        const isModerator = isLocalParticipantModerator(state);
         const {
             enableFeaturesBasedOnToken,
             liveStreamingEnabled
         } = state['features/base/config'];
         const { features = {} } = getLocalParticipant(state);
 
-        visible = liveStreamingEnabled;
+        visible = isModerator && liveStreamingEnabled;
 
         if (enableFeaturesBasedOnToken) {
             visible = visible && String(features.livestreaming) === 'true';
@@ -140,13 +150,7 @@ export function _mapStateToProps(state: Object, ownProps: Props) {
             if (!visible && !_disabled) {
                 _disabled = true;
                 visible = true;
-
-                // button and tooltip
-                if (state['features/base/jwt'].isGuest) {
-                    _tooltip = 'dialog.liveStreamingDisabledForGuestTooltip';
-                } else {
-                    _tooltip = 'dialog.liveStreamingDisabledTooltip';
-                }
+                _tooltip = 'dialog.liveStreamingDisabledTooltip';
             }
         }
     }

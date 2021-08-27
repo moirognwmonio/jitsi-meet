@@ -1,8 +1,7 @@
 /**
  * Shared style for full screen local track based dialogs/modals.
  */
- .premeeting-screen,
-  .preview-overlay {
+ .premeeting-screen {
      position: absolute;
      left: 0;
      right: 0;
@@ -12,24 +11,37 @@
 
  .premeeting-screen {
     align-items: stretch;
-    background: radial-gradient(50% 50% at 50% 50%, #5D95C7 0%, #376288 100%), #FFFFFF;
+    background: radial-gradient(50% 50% at 50% 50%, #2A3A4B 20.83%, #1E2A36 100%);
     display: flex;
     flex-direction: column;
     font-size: 1.3em;
     z-index: $toolbarZ + 1;
 
+    &-avatar {
+        background-color: #A4B8D1;
+        margin-bottom: 24px;
+
+        text {
+            fill: black;
+            font-size: 26px;
+            font-weight: 400;
+        }
+    }
+
     .action-btn {
         border-radius: 3px;
+        box-sizing: border-box;
         color: #fff;
         cursor: pointer;
         display: inline-block;
         font-size: 15px;
         line-height: 24px;
-        margin-top: 16px;
         padding: 7px 16px;
         position: relative;
         text-align: center;
-        width: 286px;
+        width: 320px;
+
+        @include adjust-for-max-width(320px, 8px);
 
         &.primary {
             background: #0376DA;
@@ -59,28 +71,27 @@
                     fill: #AFB6BC;
                 }
             }
-
-            .options {
-                border-left: 1px solid #AFB6BC;
-            }
         }
 
         .options {
+            border-radius: 3px;
             align-items: center;
-            border-left: 1px solid #fff;
             display: flex;
             height: 100%;
             justify-content: center;
             position: absolute;
             right: 0;
             top: 0;
-            width: 40px;
-        }
-    }
+            width: 36px;
 
-    .preview-overlay {
-        background-image: linear-gradient(transparent, black);
-        z-index: $toolbarZ + 1;
+            &:hover {
+                background-color: #0262B6;
+            }
+
+            svg {
+                pointer-events: none;
+            }
+        }
     }
 
     .content {
@@ -89,6 +100,7 @@
         flex: 1;
         flex-direction: column;
         justify-content: flex-end;
+        padding-bottom: 24px;
         z-index: $toolbarZ + 2;
 
         .title {
@@ -103,7 +115,7 @@
             cursor: pointer;
             color: #fff;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             font-size: 15px;
             font-weight: 300;
             justify-content: center;
@@ -111,12 +123,14 @@
             margin-bottom: 16px;
 
             .url {
+                background: rgba(28, 32, 37, 0.5);
+                border-radius: 4px;
                 display: flex;
                 padding: 8px 10px;
+                transition: background 0.16s ease-out;
 
                 &:hover {
                     background: #1C2025;
-                    border-radius: 4px;
                 }
 
                 &.done {
@@ -127,6 +141,9 @@
                     margin-left: 10px;
                 }
             }
+            .copy-button{
+                width: 298px;
+             }
 
             .copy-meeting-text {
                 width: 266px;
@@ -149,20 +166,25 @@
         }
 
         input.field {
-            background-color: transparent;
-            border: 1px solid transparent;
-            color: white;
-            outline-width: 0;
+            background-color: white;
+            border: none;
+            outline: none;
+            border-radius: 3px;
+            font-size: 15px;
+            line-height: 24px;
+            color: #1C2025;
             padding: 8px 0;
             text-align: center;
-            width: 100%;
+            width: 320px;
 
-            &.focused {
-                border-bottom: 1px solid white;
+            @include adjust-for-max-width(320px, 8px);
+
+            &.error {
+                box-shadow: 0px 0px 4px 3px rgba(225, 45, 45, 0.4);
             }
 
-            &.error::placeholder {
-                color: $defaultWarningColor;
+            &.focused {
+                box-shadow: 0px 0px 1px 1.5px black, 0px 0px 1.3px 4px white;
             }
         }
     }
@@ -170,19 +192,11 @@
     .media-btn-container {
         display: flex;
         justify-content: center;
-        margin: 32px 0;
+        margin: 24px 0 16px 0;
         width: 100%;
 
         &> div {
             margin: 0 12px;
-        }
-
-        .settings-button-small-icon {
-            right: -8px;
-
-            &--hovered {
-                right: -10px;
-            }
         }
     }
 }
@@ -233,18 +247,26 @@
     font-size: 13px;
     height: 40px;
     margin: 0 auto;
+    transition: background 0.16s ease-out;
     width: 320px;
 
+    @include adjust-for-max-width(320px, 8px);
     @include flex-centered();
 
     svg {
         fill: transparent;
     }
 
-    &:hover {
-        background: #1C2025;
+    label {
+        cursor: pointer;
+    }
 
-        @include icon-container(#A4B8D1, #1C2025);
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+
+        .toggle-button-icon-container {
+            display: none;
+        }
     }
 
     &-container {
@@ -261,14 +283,16 @@
     }
 
     &--toggled {
-        background: #75757A;
+        @include icon-container(white, #1C2025);
 
         &:hover {
-            background: #75757A;
-
-            @include icon-container(#A4B8D1, #75757A);
+            .toggle-button-icon-container {
+                display: block;
+            }
         }
 
-        @include icon-container(#A4B8D1, #75757A);
+        .toggle-button-icon-container {
+            display: block;
+        }
     }
 }

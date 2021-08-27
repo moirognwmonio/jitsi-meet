@@ -20,21 +20,21 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.DevInternalSettings;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
-
 import com.oney.WebRTCModule.RTCVideoViewManager;
 import com.oney.WebRTCModule.WebRTCModule;
 
+import org.devio.rn.splashscreen.SplashScreenModule;
 import org.webrtc.SoftwareVideoDecoderFactory;
 import org.webrtc.SoftwareVideoEncoderFactory;
 import org.webrtc.audio.AudioDeviceModule;
@@ -67,6 +67,7 @@ class ReactInstanceManagerHolder {
                 new JavaScriptSandboxModule(reactContext),
                 new LocaleDetector(reactContext),
                 new LogBridgeModule(reactContext),
+                new SplashScreenModule(reactContext),
                 new PictureInPictureModule(reactContext),
                 new ProximityModule(reactContext),
                 new WiFiStatsModule(reactContext),
@@ -176,11 +177,11 @@ class ReactInstanceManagerHolder {
 
         List<ReactPackage> packages
             = new ArrayList<>(Arrays.asList(
-                new com.BV.LinearGradient.LinearGradientPackage(),
                 new com.corbt.keepawake.KCKeepAwakePackage(),
                 new com.facebook.react.shell.MainReactPackage(),
                 new com.horcrux.svg.SvgPackage(),
                 new com.kevinresol.react_native_default_preference.RNDefaultPreferencePackage(),
+                new com.learnium.RNDeviceInfo.RNDeviceInfo(),
                 new com.ocetnik.timer.BackgroundTimerPackage(),
                 new com.reactnativecommunity.asyncstorage.AsyncStoragePackage(),
                 new com.reactnativecommunity.netinfo.NetInfoPackage(),
@@ -214,11 +215,11 @@ class ReactInstanceManagerHolder {
                 .build();
 
         // Disable delta updates on Android, they have caused trouble.
-        DevInternalSettings devSettings
-            = (DevInternalSettings)reactInstanceManager.getDevSupportManager().getDevSettings();
-        if (devSettings != null) {
-            devSettings.setBundleDeltasEnabled(false);
-        }
+        // DevInternalSettings devSettings
+        //     = (DevInternalSettings)reactInstanceManager.getDevSupportManager().getDevSettings();
+        // if (devSettings != null) {
+        //     devSettings.setBundleDeltasEnabled(false);
+        // }
 
         // Register our uncaught exception handler.
         JitsiMeetUncaughtExceptionHandler.register();

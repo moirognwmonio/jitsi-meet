@@ -3,9 +3,15 @@
 import { type Dispatch } from 'redux';
 
 import { appNavigate, maybeRedirectToWelcomePage } from '../app/actions';
-import { conferenceWillJoin, getCurrentConference, setPassword } from '../base/conference';
+import {
+    conferenceWillJoin,
+    getCurrentConference,
+    sendLocalParticipant,
+    setPassword
+} from '../base/conference';
 import { hideDialog, openDialog } from '../base/dialog';
 import { getLocalParticipant } from '../base/participants';
+export * from './actions.any';
 
 import {
     KNOCKING_PARTICIPANT_ARRIVED_OR_UPDATED,
@@ -124,6 +130,50 @@ export function setKnockingParticipantApproval(id: string, approved: boolean) {
 }
 
 /**
+ * Action used to admit multiple participants in the conference.
+ *
+ * @param {Array<Object>} participants - A list of knocking participants.
+ * @returns {void}
+ */
+export function admitMultiple(participants: Array<Object>) {
+    return (dispatch: Function, getState: Function) => {
+        const conference = getCurrentConference(getState);
+
+        participants.forEach(p => {
+            conference.lobbyApproveAccess(p.id);
+        });
+    };
+}
+
+/**
+ * Approves the request of a knocking participant to join the meeting.
+ *
+ * @param {string} id - The id of the knocking participant.
+ * @returns {Function}
+ */
+export function approveKnockingParticipant(id: string) {
+    return (dispatch: Dispatch<any>, getState: Function) => {
+        const conference = getCurrentConference(getState);
+
+        conference && conference.lobbyApproveAccess(id);
+    };
+}
+
+/**
+ * Denies the request of a knocking participant to join the meeting.
+ *
+ * @param {string} id - The id of the knocking participant.
+ * @returns {Function}
+ */
+export function rejectKnockingParticipant(id: string) {
+    return (dispatch: Dispatch<any>, getState: Function) => {
+        const conference = getCurrentConference(getState);
+
+        conference && conference.lobbyDenyAccess(id);
+    };
+}
+
+/**
  * Action to set the knocking state of the participant.
  *
  * @param {boolean} knocking - The new state.
@@ -183,25 +233,12 @@ export function startKnocking() {
         const localParticipant = getLocalParticipant(state);
 
         dispatch(conferenceWillJoin(membersOnly));
+
+        // We need to update the conference object with the current display name, if approved
+        // we want to send that display name, it was not updated in case when pre-join is disabled
+        sendLocalParticipant(state, membersOnly);
+
         membersOnly.joinLobby(localParticipant.name, localParticipant.email);
         dispatch(setKnockingState(true));
-    };
-}
-
-/**
- * Action to toggle lobby mode on or off.
- *
- * @param {boolean} enabled - The desired (new) state of the lobby mode.
- * @returns {Function}
- */
-export function toggleLobbyMode(enabled: boolean) {
-    return async (dispatch: Dispatch<any>, getState: Function) => {
-        const conference = getCurrentConference(getState);
-
-        if (enabled) {
-            conference.enableLobby();
-        } else {
-            conference.disableLobby();
-        }
     };
 }
