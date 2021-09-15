@@ -38,6 +38,8 @@ jobs:
           command: |
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
+            sudo apt update
+            sudo apt install software-properties-common
             sudo add-apt-repository ppa:deadsnakes/ppa
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3.6-dev
