@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:10.19
+      - image: circleci/node:current
 
     steps:
       - checkout
