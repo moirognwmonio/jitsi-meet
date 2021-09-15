@@ -33,7 +33,6 @@ export function createFakeConfig(baseURL: string) {
             muc: `conference.${url.hostname}`
         },
         bosh: `${baseURL}http-bind`,
-        clientNode: 'https://jitsi.org/jitsi-meet',
         p2p: {
             enabled: true
         }
@@ -51,6 +50,16 @@ export function getMeetingRegion(state: Object) {
 }
 
 /**
+ * Selector used to get the disableRemoveRaisedHandOnFocus.
+ *
+ * @param {Object} state - The global state.
+ * @returns {boolean}
+ */
+export function getDisableRemoveRaisedHandOnFocus(state: Object) {
+    return state['features/base/config']?.disableRemoveRaisedHandOnFocus || false;
+}
+
+/**
  * Selector used to get the endpoint used for fetching the recording.
  *
  * @param {Object} state - The global state.
@@ -59,8 +68,6 @@ export function getMeetingRegion(state: Object) {
 export function getRecordingSharingUrl(state: Object) {
     return state['features/base/config'].recordingSharingUrl;
 }
-
-/* eslint-disable max-params, no-shadow */
 
 /**
  * Overrides JSON properties in {@code config} and

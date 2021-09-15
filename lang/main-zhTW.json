@@ -66,10 +66,12 @@
         "noMessagesMessage": "此會議尚無訊息。在此開始對話交談！",
         "nickname": {
             "popover": "選擇名稱",
-            "title": "輸入名稱來使用交談"
+            "title": "輸入名稱來使用交談",
+            "titleWithPolls": "輸入名稱來使用交談"
         },
         "privateNotice": "私人訊息傳送至 {{recipient}}",
         "title": "對話",
+        "titleWithPolls": "對話",
         "you": "您",
         "message": "訊息",
         "messageAccessibleTitle": "{{user}} 說：",
@@ -209,7 +211,6 @@
         "e2eeLabel": "啟用端對端加密",
         "e2eeWarning": "警告：看來不是每位此會議的參與者都有啟用端對端加密，如果您啟用了，他們可能無法看/聽到您。",
         "enterDisplayName": "請在此輸入您自己的名字",
-        "enterDisplayNameToJoin": "請輸入您的名字以加入",
         "embedMeeting": "嵌入會議",
         "error": "錯誤",
         "gracefulShutdown": "我們的服務目前關閉維護中，請稍後再試。",

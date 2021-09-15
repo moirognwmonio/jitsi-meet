@@ -1,17 +1,6 @@
 // @flow
 
 /**
- * Placeholder for web share video input.
- * @type {string}
- */
-export const defaultSharedVideoLink = 'Youtube link or direct video link';
-
-/**
- * Mobile example for a youtube video
- */
-export const defaultMobileSharedVideoLink = 'https://youtu.be/TB7LlM4erx8';
-
-/**
  * Fixed name of the video player fake participant.
  * @type {string}
  */
@@ -29,3 +18,12 @@ export const YOUTUBE_PLAYER_PARTICIPANT_NAME = 'YouTube';
  * @type {string}
  */
 export const SHARED_VIDEO = 'shared-video';
+
+/**
+ * Available playback statuses
+ */
+export const PLAYBACK_STATUSES = {
+    PLAYING: 'playing',
+    PAUSED: 'pause',
+    STOPPED: 'stop'
+};

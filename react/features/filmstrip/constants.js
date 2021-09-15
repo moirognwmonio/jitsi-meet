@@ -164,6 +164,11 @@ export const TILE_HORIZONTAL_MARGIN = 4;
 export const TOOLBAR_HEIGHT = 72;
 
 /**
+ * The height of the whole toolbar.
+ */
+export const TOOLBAR_HEIGHT_MOBILE = 60;
+
+/**
  * The size of the horizontal border of a thumbnail.
  *
  * @type {number}
@@ -215,3 +220,22 @@ export const HORIZONTAL_FILMSTRIP_MARGIN = 39;
  * @type {number}
  */
 export const SHOW_TOOLBAR_CONTEXT_MENU_AFTER = 600;
+
+
+/**
+ * The ratio for filmstrip self view on mobile portrait mode.
+ *
+ * @type {number}
+ */
+export const MOBILE_FILMSTRIP_PORTRAIT_RATIO = 2.5;
+
+/**
+ * The margin for each side of the tile view. Taken away from the available
+ * height and width for the tile container to display in.
+ *
+ * NOTE: Mobile specific.
+ *
+ * @private
+ * @type {number}
+ */
+export const TILE_MARGIN = 10;

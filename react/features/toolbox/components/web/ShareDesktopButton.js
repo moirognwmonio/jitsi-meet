@@ -3,11 +3,9 @@
 import { translate } from '../../../base/i18n';
 import { IconShareDesktop } from '../../../base/icons';
 import JitsiMeetJS from '../../../base/lib-jitsi-meet/_';
-import { getParticipants } from '../../../base/participants';
 import { connect } from '../../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
-import { getLocalVideoTrack } from '../../../base/tracks';
-import { isScreenAudioShared } from '../../../screen-share';
+import { isScreenVideoShared } from '../../../screen-share';
 
 type Props = AbstractButtonProps & {
 
@@ -31,11 +29,6 @@ type Props = AbstractButtonProps & {
      * The redux {@code dispatch} function.
      */
      dispatch: Function,
-
-     /**
-      * External handler for click action.
-      */
-      handleClick: Function
 };
 
 /**
@@ -81,7 +74,13 @@ class ShareDesktopButton extends AbstractButton<Props, *> {
      * @returns {void}
      */
     _handleClick() {
-        this.props.handleClick();
+        const { handleClick } = this.props;
+
+        if (handleClick) {
+            handleClick();
+
+            return;
+        }
     }
 
     /**
@@ -114,7 +113,6 @@ class ShareDesktopButton extends AbstractButton<Props, *> {
  * @returns {Object}
  */
 const mapStateToProps = state => {
-    const localVideo = getLocalVideoTrack(state['features/base/tracks']);
     let desktopSharingEnabled = JitsiMeetJS.isDesktopSharingEnabled();
     const { enableFeaturesBasedOnToken } = state['features/base/config'];
 
@@ -123,16 +121,14 @@ const mapStateToProps = state => {
     if (enableFeaturesBasedOnToken) {
         // we enable desktop sharing if any participant already have this
         // feature enabled
-        desktopSharingEnabled = getParticipants(state)
-            .find(({ features = {} }) =>
-                String(features['screen-sharing']) === 'true') !== undefined;
+        desktopSharingEnabled = state['features/base/participants'].haveParticipantWithScreenSharingFeature;
         desktopSharingDisabledTooltipKey = 'dialog.shareYourScreenDisabled';
     }
 
     return {
         _desktopSharingDisabledTooltipKey: desktopSharingDisabledTooltipKey,
         _desktopSharingEnabled: desktopSharingEnabled,
-        _screensharing: (localVideo && localVideo.videoType === 'desktop') || isScreenAudioShared(state)
+        _screensharing: isScreenVideoShared(state)
     };
 };
 

@@ -39,6 +39,7 @@ import {
 } from '../../react/features/device-selection/functions';
 import { isEnabled as isDropboxEnabled } from '../../react/features/dropbox';
 import { toggleE2EE } from '../../react/features/e2ee/actions';
+import { setVolume } from '../../react/features/filmstrip';
 import { invite } from '../../react/features/invite';
 import {
     selectParticipantInLargeVideo
@@ -173,6 +174,9 @@ function initCommands() {
             logger.debug('Set large video participant command received');
             sendAnalytics(createApiEvent('largevideo.participant.set'));
             APP.store.dispatch(selectParticipantInLargeVideo(participantId));
+        },
+        'set-participant-volume': (participantId, volume) => {
+            APP.store.dispatch(setVolume(participantId, volume));
         },
         'subject': subject => {
             sendAnalytics(createApiEvent('subject.changed'));
@@ -1322,6 +1326,32 @@ class API {
             on,
             mode,
             error
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that an error occured.
+     *
+     * @param {Object} error - The error.
+     * @returns {void}
+     */
+    notifyError(error: Object) {
+        this._sendEvent({
+            name: 'error-occurred',
+            error
+        });
+    }
+
+    /**
+     * Notify external application ( if API is enabled) that a toolbar button was clicked.
+     *
+     * @param {string} key - The key of the toolbar button.
+     * @returns {void}
+     */
+    notifyToolbarButtonClicked(key: string) {
+        this._sendEvent({
+            name: 'toolbar-button-clicked',
+            key
         });
     }
 

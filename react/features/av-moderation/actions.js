@@ -11,9 +11,12 @@ import {
     LOCAL_PARTICIPANT_MODERATION_NOTIFICATION,
     PARTICIPANT_APPROVED,
     PARTICIPANT_PENDING_AUDIO,
-    REQUEST_DISABLE_MODERATION,
-    REQUEST_ENABLE_MODERATION
+    REQUEST_DISABLE_AUDIO_MODERATION,
+    REQUEST_ENABLE_AUDIO_MODERATION,
+    REQUEST_DISABLE_VIDEO_MODERATION,
+    REQUEST_ENABLE_VIDEO_MODERATION
 } from './actionTypes';
+import { isEnabledFromState } from './functions';
 
 /**
  * Action used by moderator to approve audio and video for a participant.
@@ -22,10 +25,15 @@ import {
  * @returns {void}
  */
 export const approveParticipant = (id: string) => (dispatch: Function, getState: Function) => {
-    const { conference } = getConferenceState(getState());
+    const state = getState();
+    const { conference } = getConferenceState(state);
 
-    conference.avModerationApprove(MEDIA_TYPE.AUDIO, id);
-    conference.avModerationApprove(MEDIA_TYPE.VIDEO, id);
+    if (isEnabledFromState(MEDIA_TYPE.AUDIO, state)) {
+        conference.avModerationApprove(MEDIA_TYPE.AUDIO, id);
+    }
+    if (isEnabledFromState(MEDIA_TYPE.VIDEO, state)) {
+        conference.avModerationApprove(MEDIA_TYPE.VIDEO, id);
+    }
 };
 
 /**
@@ -53,20 +61,20 @@ export const disableModeration = (mediaType: MediaType, actor: Object) => {
  * @returns {Object}
  */
 export function dismissPendingAudioParticipant(participant: Object) {
-    return dismissPendingParticipant(participant, MEDIA_TYPE.AUDIO);
+    return dismissPendingParticipant(participant.id, MEDIA_TYPE.AUDIO);
 }
 
 /**
  * Hides the notification with the participant that asked to unmute.
  *
- * @param {Object} participant - The participant for which the notification to be hidden.
+ * @param {string} id - The participant id for which the notification to be hidden.
  * @param {MediaType} mediaType - The media type.
  * @returns {Object}
  */
-export function dismissPendingParticipant(participant: Object, mediaType: MediaType) {
+export function dismissPendingParticipant(id: string, mediaType: MediaType) {
     return {
         type: DISMISS_PENDING_PARTICIPANT,
-        participant,
+        id,
         mediaType
     };
 }
@@ -89,28 +97,54 @@ export const enableModeration = (mediaType: MediaType, actor: Object) => {
 };
 
 /**
- * Requests disable of audio and video moderation.
+ * Requests disable of audio moderation.
  *
  * @returns {{
- *     type: REQUEST_DISABLE_MODERATED_AUDIO
+ *     type: REQUEST_DISABLE_AUDIO_MODERATION
  * }}
  */
-export const requestDisableModeration = () => {
+export const requestDisableAudioModeration = () => {
     return {
-        type: REQUEST_DISABLE_MODERATION
+        type: REQUEST_DISABLE_AUDIO_MODERATION
     };
 };
 
 /**
- * Requests enabled audio & video moderation.
+ * Requests disable of video moderation.
  *
  * @returns {{
- *     type: REQUEST_ENABLE_MODERATED_AUDIO
+ *     type: REQUEST_DISABLE_VIDEO_MODERATION
  * }}
  */
-export const requestEnableModeration = () => {
+export const requestDisableVideoModeration = () => {
     return {
-        type: REQUEST_ENABLE_MODERATION
+        type: REQUEST_DISABLE_VIDEO_MODERATION
+    };
+};
+
+/**
+ * Requests enable of audio moderation.
+ *
+ * @returns {{
+ *     type: REQUEST_ENABLE_AUDIO_MODERATION
+ * }}
+ */
+export const requestEnableAudioModeration = () => {
+    return {
+        type: REQUEST_ENABLE_AUDIO_MODERATION
+    };
+};
+
+/**
+ * Requests enable of video moderation.
+ *
+ * @returns {{
+ *     type: REQUEST_ENABLE_VIDEO_MODERATION
+ * }}
+ */
+export const requestEnableVideoModeration = () => {
+    return {
+        type: REQUEST_ENABLE_VIDEO_MODERATION
     };
 };
 

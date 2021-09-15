@@ -3,6 +3,8 @@
 import { Component } from 'react';
 import type { Dispatch } from 'redux';
 
+import { getYoutubeId } from '../functions';
+
 /**
  * The type of the React {@code Component} props of
  * {@link AbstractSharedVideoDialog}.
@@ -42,4 +44,47 @@ export default class AbstractSharedVideoDialog<S: *> extends Component < Props, 
     }
 
     _onSetVideoLink: string => boolean;
+
+    /**
+     * Validates the entered video link by extracting the id and dispatches it.
+     *
+     * It returns a boolean to comply the Dialog behaviour:
+     *     {@code true} - the dialog should be closed.
+     *     {@code false} - the dialog should be left open.
+     *
+    * @param {string} link - The entered video link.
+     * @returns {boolean}
+     */
+    _onSetVideoLink(link: string) {
+        if (!link) {
+            return false;
+        }
+
+        const trimmedLink = link.trim();
+
+        if (!trimmedLink) {
+            return false;
+        }
+
+        const { onPostSubmit } = this.props;
+        const youtubeId = getYoutubeId(trimmedLink);
+
+        if (youtubeId) {
+            onPostSubmit(youtubeId);
+
+            return true;
+        }
+
+        // Check if the URL is valid, native may crash otherwise.
+        try {
+            // eslint-disable-next-line no-new
+            new URL(trimmedLink);
+        } catch (_) {
+            return false;
+        }
+
+        onPostSubmit(trimmedLink);
+
+        return true;
+    }
 }
