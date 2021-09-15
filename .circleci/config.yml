@@ -39,7 +39,7 @@ jobs:
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3.5-dev
+            sudo apt-get -y -qq install python3.6-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
             python3.6 get-pip.py --user
             export PATH=~/.local/bin:$PATH
