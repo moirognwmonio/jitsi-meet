@@ -70,6 +70,7 @@ export default [
      */
     'callUUID',
 
+    'conferenceInfo',
     'channelLastN',
     'connectionIndicators',
     'constraints',
@@ -95,9 +96,11 @@ export default [
     'disableIncomingMessageSound',
     'disableJoinLeaveSounds',
     'disableLocalVideoFlip',
+    'disableModeratorIndicator',
     'disableNS',
     'disablePolls',
     'disableProfile',
+    'disableReactions',
     'disableRecordAudioNotification',
     'disableRemoteControl',
     'disableRemoteMute',
@@ -125,7 +128,6 @@ export default [
     'enableLayerSuspension',
     'enableLipSync',
     'enableOpusRed',
-    'enableReactions',
     'enableRemb',
     'enableSaveLogs',
     'enableScreenshotCapture',

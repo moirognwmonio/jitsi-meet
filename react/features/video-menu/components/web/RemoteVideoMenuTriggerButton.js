@@ -5,7 +5,7 @@ import { batch } from 'react-redux';
 
 import ConnectionIndicatorContent from
     '../../../../features/connection-indicator/components/web/ConnectionIndicatorContent';
-import { isMobileBrowser } from '../../../base/environment/utils';
+import { isIosMobileBrowser, isMobileBrowser } from '../../../base/environment/utils';
 import { translate } from '../../../base/i18n';
 import { Icon, IconMenuThumb } from '../../../base/icons';
 import { getLocalParticipant, getParticipantById, PARTICIPANT_ROLE } from '../../../base/participants';
@@ -274,6 +274,10 @@ class RemoteVideoMenuTriggerButton extends Component<Props> {
         } = this.props;
 
         const buttons = [];
+        const showVolumeSlider = !isIosMobileBrowser()
+              && onVolumeChange
+              && typeof initialVolumeValue === 'number'
+              && !isNaN(initialVolumeValue);
 
         if (_isModerator) {
             if (!_disableRemoteMute) {
@@ -348,7 +352,7 @@ class RemoteVideoMenuTriggerButton extends Component<Props> {
             );
         }
 
-        if (onVolumeChange && typeof initialVolumeValue === 'number' && !isNaN(initialVolumeValue)) {
+        if (showVolumeSlider) {
             buttons.push(
                 <VolumeSlider
                     initialValue = { initialVolumeValue }
@@ -384,7 +388,7 @@ function _mapStateToProps(state, ownProps) {
     const { disableKick, disableGrantModerator } = remoteVideoMenu;
     let _remoteControlState = null;
     const participant = getParticipantById(state, participantID);
-    const _participantDisplayName = participant.name;
+    const _participantDisplayName = participant?.name;
     const _isRemoteControlSessionActive = participant?.remoteControlSessionStatus ?? false;
     const _supportsRemoteControl = participant?.supportsRemoteControl ?? false;
     const { active, controller } = state['features/remote-control'];
