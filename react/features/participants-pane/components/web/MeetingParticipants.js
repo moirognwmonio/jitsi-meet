@@ -4,18 +4,20 @@ import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
+import { rejectParticipantAudio } from '../../../av-moderation/actions';
 import { isToolbarButtonEnabled } from '../../../base/config/functions.web';
 import { MEDIA_TYPE } from '../../../base/media';
 import {
-    getParticipantCountWithFake,
-    getSortedParticipantIds
+    getParticipantCountWithFake
 } from '../../../base/participants';
 import { connect } from '../../../base/redux';
+import { normalizeAccents } from '../../../base/util/strings';
 import { showOverflowDrawer } from '../../../toolbox/functions';
 import { muteRemote } from '../../../video-menu/actions.any';
-import { findStyledAncestor, shouldRenderInviteButton } from '../../functions';
+import { findStyledAncestor, getSortedParticipantIds, shouldRenderInviteButton } from '../../functions';
 import { useParticipantDrawer } from '../../hooks';
 
+import ClearableInput from './ClearableInput';
 import { InviteButton } from './InviteButton';
 import MeetingParticipantContextMenu from './MeetingParticipantContextMenu';
 import MeetingParticipantItems from './MeetingParticipantItems';
@@ -56,6 +58,7 @@ function MeetingParticipants({ participantsCount, showInviteButton, overflowDraw
     const isMouseOverMenu = useRef(false);
 
     const [ raiseContext, setRaiseContext ] = useState < RaiseContext >(initialState);
+    const [ searchString, setSearchString ] = useState('');
     const { t } = useTranslation();
 
     const lowerMenu = useCallback(() => {
@@ -104,6 +107,7 @@ function MeetingParticipants({ participantsCount, showInviteButton, overflowDraw
 
     const muteAudio = useCallback(id => () => {
         dispatch(muteRemote(id, MEDIA_TYPE.AUDIO));
+        dispatch(rejectParticipantAudio(id));
     }, [ dispatch ]);
     const [ drawerParticipant, closeDrawer, openDrawerForParticipant ] = useParticipantDrawer();
 
@@ -122,6 +126,9 @@ function MeetingParticipants({ participantsCount, showInviteButton, overflowDraw
         <>
             <Heading>{t('participantsPane.headings.participantsList', { count: participantsCount })}</Heading>
             {showInviteButton && <InviteButton />}
+            <ClearableInput
+                onChange = { setSearchString }
+                placeholder = { t('participantsPane.search') } />
             <div>
                 <MeetingParticipantItems
                     askUnmuteText = { askUnmuteText }
@@ -134,6 +141,7 @@ function MeetingParticipants({ participantsCount, showInviteButton, overflowDraw
                     participantIds = { sortedParticipantIds }
                     participantsCount = { participantsCount }
                     raiseContextId = { raiseContext.participantID }
+                    searchString = { normalizeAccents(searchString) }
                     toggleMenu = { toggleMenu }
                     youText = { youText } />
             </div>

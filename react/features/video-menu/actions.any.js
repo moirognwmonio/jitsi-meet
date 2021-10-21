@@ -10,7 +10,7 @@ import {
     sendAnalytics,
     VIDEO_MUTE
 } from '../analytics';
-import { showModeratedNotification } from '../av-moderation/actions';
+import { rejectParticipantAudio, rejectParticipantVideo, showModeratedNotification } from '../av-moderation/actions';
 import { shouldShowModeratedNotification } from '../av-moderation/functions';
 import {
     MEDIA_TYPE,
@@ -35,9 +35,10 @@ const logger = getLogger(__filename);
  *
  * @param {boolean} enable - Whether to mute or unmute.
  * @param {MEDIA_TYPE} mediaType - The type of the media channel to mute.
+ * @param {boolean} stopScreenSharing - Whether or not to stop the screensharing.
  * @returns {Function}
  */
-export function muteLocal(enable: boolean, mediaType: MEDIA_TYPE) {
+export function muteLocal(enable: boolean, mediaType: MEDIA_TYPE, stopScreenSharing: boolean = false) {
     return (dispatch: Dispatch<any>, getState: Function) => {
         const isAudio = mediaType === MEDIA_TYPE.AUDIO;
 
@@ -56,7 +57,7 @@ export function muteLocal(enable: boolean, mediaType: MEDIA_TYPE) {
             return;
         }
 
-        if (enable) {
+        if (enable && stopScreenSharing) {
             dispatch(toggleScreensharing(false, false, true));
         }
 
@@ -102,7 +103,7 @@ export function muteAllParticipants(exclude: Array<string>, mediaType: MEDIA_TYP
         const localId = getLocalParticipant(state).id;
 
         if (!exclude.includes(localId)) {
-            dispatch(muteLocal(true, mediaType));
+            dispatch(muteLocal(true, mediaType, true));
         }
 
         getRemoteParticipants(state).forEach((p, id) => {
@@ -111,6 +112,11 @@ export function muteAllParticipants(exclude: Array<string>, mediaType: MEDIA_TYP
             }
 
             dispatch(muteRemote(id, mediaType));
+            if (mediaType === MEDIA_TYPE.AUDIO) {
+                dispatch(rejectParticipantAudio(id));
+            } else {
+                dispatch(rejectParticipantVideo(id));
+            }
         });
     };
 }

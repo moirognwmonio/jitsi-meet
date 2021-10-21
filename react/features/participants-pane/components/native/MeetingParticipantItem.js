@@ -5,8 +5,8 @@ import React, { PureComponent } from 'react';
 import { translate } from '../../../base/i18n';
 import {
     getLocalParticipant,
-    getParticipantByIdOrUndefined,
     getParticipantDisplayName,
+    hasRaisedHand,
     isParticipantModerator
 } from '../../../base/participants';
 import { connect } from '../../../base/redux';
@@ -27,6 +27,11 @@ type Props = {
      * Media state for audio.
      */
     _audioMediaState: MediaState,
+
+    /**
+     * Whether or not to disable the moderator indicator.
+     */
+    _disableModeratorIndicator: boolean,
 
     /**
      * The display name of the participant.
@@ -74,9 +79,9 @@ type Props = {
     dispatch: Function,
 
     /**
-     * The ID of the participant.
+     * The participant.
      */
-    participantID: ?string
+    participant: ?Object
 };
 
 /**
@@ -131,6 +136,7 @@ class MeetingParticipantItem extends PureComponent<Props> {
     render() {
         const {
             _audioMediaState,
+            _disableModeratorIndicator,
             _displayName,
             _isModerator,
             _local,
@@ -142,6 +148,7 @@ class MeetingParticipantItem extends PureComponent<Props> {
         return (
             <ParticipantItem
                 audioMediaState = { _audioMediaState }
+                disableModeratorIndicator = { _disableModeratorIndicator }
                 displayName = { _displayName }
                 isKnockingParticipant = { false }
                 isModerator = { _isModerator }
@@ -163,17 +170,18 @@ class MeetingParticipantItem extends PureComponent<Props> {
  * @returns {Props}
  */
 function mapStateToProps(state, ownProps): Object {
-    const { participantID } = ownProps;
+    const { participant } = ownProps;
     const { ownerId } = state['features/shared-video'];
     const localParticipantId = getLocalParticipant(state).id;
-    const participant = getParticipantByIdOrUndefined(state, participantID);
     const _isAudioMuted = isParticipantAudioMuted(participant, state);
     const _isVideoMuted = isParticipantVideoMuted(participant, state);
     const audioMediaState = getParticipantAudioMediaState(participant, _isAudioMuted, state);
     const videoMediaState = getParticipantVideoMediaState(participant, _isVideoMuted, state);
+    const { disableModeratorIndicator } = state['features/base/config'];
 
     return {
         _audioMediaState: audioMediaState,
+        _disableModeratorIndicator: disableModeratorIndicator,
         _displayName: getParticipantDisplayName(state, participant?.id),
         _isAudioMuted,
         _isFakeParticipant: Boolean(participant?.isFakeParticipant),
@@ -181,7 +189,7 @@ function mapStateToProps(state, ownProps): Object {
         _local: Boolean(participant?.local),
         _localVideoOwner: Boolean(ownerId === localParticipantId),
         _participantID: participant?.id,
-        _raisedHand: Boolean(participant?.raisedHand),
+        _raisedHand: hasRaisedHand(participant),
         _videoMediaState: videoMediaState
     };
 }

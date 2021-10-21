@@ -57,6 +57,7 @@ MiddlewareRegistry.register(store => next => action => {
         // The devices list needs to be refreshed when no initial video permissions
         // were granted and a local video track is added by umuting the video.
         if (action.track.local) {
+            action.track.timestamp = Date.now() / 1000;
             store.dispatch(getAvailableDevices());
         }
 
@@ -179,7 +180,7 @@ MiddlewareRegistry.register(store => next => action => {
                 } else if (jitsiTrack.isLocal() && !(jitsiTrack.videoType === VIDEO_TYPE.DESKTOP)) {
                     APP.conference.setVideoMuteStatus();
                 } else if (jitsiTrack.isLocal() && muted && jitsiTrack.videoType === VIDEO_TYPE.DESKTOP) {
-                    store.dispatch(toggleScreensharing(false));
+                    store.dispatch(toggleScreensharing(false, false, true));
                 } else {
                     APP.UI.setVideoMuted(participantID);
                 }
