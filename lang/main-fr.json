@@ -633,6 +633,7 @@
   "passwordSetRemotely": "défini par un autre participant",
   "passwordDigitsOnly": "Jusqu'à {{number}} chiffres",
   "polls": {
+    "by": "Par {{ name }}",
     "create": {
       "addOption": "Ajouter une option",
       "answerPlaceholder": "Option {{index}}",
@@ -816,7 +817,7 @@
     "selectCamera": "Caméra",
     "selectMic": "Microphone",
     "sounds": "Sons",
-    "speakers": "Intervenants",
+    "speakers": "Haut-parleurs",
     "startAudioMuted": "Tout le monde commence en muet",
     "startVideoMuted": "Tout le monde commence sans vidéo",
     "talkWhileMuted": "vous parlez en étant muet",
