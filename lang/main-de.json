@@ -39,6 +39,23 @@
     "audioOnly": {
         "audioOnly": "Geringe Bandbreite"
     },
+    "blankPage": {
+        "meetingEnded": "Konferenz beendet."
+    },
+    "breakoutRooms": {
+        "defaultName": "Breakout-Raum #{{index}}",
+        "mainRoom": "Hauptraum",
+        "actions": {
+            "add": "Breakout-Raum hinzufügen",
+            "autoAssign": "Automatisch auf Breakout-Räume verteilen",
+            "close": "Schließen",
+            "join": "Teilnehmen",
+            "leaveBreakoutRoom": "Breakout-Raum verlassen",
+            "more": "Mehr",
+            "remove": "Entfernen",
+            "sendToBreakoutRoom": "Anwesende in Breakout-Raum verschieben:"
+        }
+    },
     "calendarSync": {
         "addMeetingURL": "Konferenzlink hinzufügen",
         "confirmAddLink": "Möchten Sie einen Jitsi-Link zu diesem Termin hinzufügen?",
@@ -501,6 +518,7 @@
         "expandedPending": "Livestream wird gestartet …",
         "failedToStart": "Livestream konnte nicht gestartet werden",
         "getStreamKeyManually": "Wir waren nicht in der Lage, Livestreams abzurufen. Versuchen Sie, Ihren Livestream-Schlüssel von YouTube zu erhalten.",
+        "inProgress": "Livestreaming gestartet",
         "invalidStreamKey": "Der Livestream-Schlüssel ist u. U. falsch.",
         "off": "Livestream gestoppt",
         "offBy": "{{name}} stoppte den Livestream",
@@ -508,6 +526,7 @@
         "onBy": "{{name}} startete den Livestream",
         "pending": "Livestream wird gestartet …",
         "serviceName": "Livestreaming-Dienst",
+        "sessionAlreadyActive": "Diese Konferenz wird bereits als Livestream übertragen.",
         "signedInAs": "Sie sind derzeit angemeldet als:",
         "signIn": "Mit Google anmelden",
         "signInCTA": "Anmelden oder den Streamschlüssel des YouTube-Livestreams eingeben.",
@@ -553,6 +572,8 @@
     "notify": {
         "allowAction": "Erlauben",
         "allowedUnmute": "Sie können die Stummschaltung aufheben, Ihre Kamera einschalten oder Ihren Bildschirm teilen.",
+        "audioUnmuteBlockedTitle": "Stummschaltung kann nicht aufgehoben werden!",
+        "audioUnmuteBlockedDescription": "Díe Stummschaltung kann aus Überlastungsschutzgründen temporär nicht aufgehoben werden.",
         "connectedOneMember": "{{name}} nimmt am Meeting teil",
         "connectedThreePlusMembers": "{{name}} und {{count}} andere Personen nehmen am Meeting teil",
         "connectedTwoMembers": "{{first}} und {{second}} nehmen am Meeting teil",
@@ -603,7 +624,9 @@
         "moderationToggleDescription": "von {{participantDisplayName}}",
         "raiseHandAction": "Melden",
         "reactionSounds": "Interaktionstöne deaktivieren",
-        "groupTitle": "Benachrichtigungen"
+        "groupTitle": "Benachrichtigungen",
+        "videoUnmuteBlockedTitle": "Kamera kann nicht aktiviert werden!",
+        "videoUnmuteBlockedDescription": "Die Kamera kann aus Überlastungsschutzgründen temporär nicht eingeschaltet werden."
     },
     "participantsPane": {
         "close": "Schließen",
@@ -621,6 +644,7 @@
             "invite": "Person einladen",
             "askUnmute": "Anfragen, Stummschaltung aufzuheben",
             "moreModerationActions": "Weitere Moderationsoptionen",
+            "moreParticipantOptions": "Mehr Optionen für Anwesende",
             "mute": "Stummschalten",
             "muteAll": "Alle stummschalten",
             "muteEveryoneElse": "Alle anderen stummschalten",
@@ -760,6 +784,7 @@
         "expandedPending": "Aufzeichnung wird gestartet…",
         "failedToStart": "Die Aufnahme konnte nicht gestartet werden",
         "fileSharingdescription": "Aufzeichnung mit den Personen der Konferenz teilen",
+        "inProgress": "Aufzeichnung gestartet",
         "linkGenerated": "Link zur Aufzeichnung wurde generiert.",
         "live": "LIVE",
         "loggedIn": "Als {{userName}} angemeldet",
@@ -772,6 +797,7 @@
         "serviceDescription": "Ihre Aufzeichnung wird vom Aufzeichnungsdienst gespeichert",
         "serviceDescriptionCloud": "Cloud-Aufzeichnung",
         "serviceName": "Aufnahmedienst",
+        "sessionAlreadyActive": "Diese Konferenz wird bereits aufgezeichnet.",
         "signIn": "Anmelden",
         "signOut": "Abmelden",
         "unavailable": "Oh! Der {{serviceName}} ist aktuell nicht verfügbar. Wir arbeiten an der Behebung des Problems. Bitte versuchen Sie es später noch einmal.",
@@ -858,7 +884,14 @@
         "name": "Name",
         "seconds": "{{count}} Sek.",
         "speakerStats": "Sprechstatistik",
-        "speakerTime": "Sprechzeit"
+        "speakerTime": "Sprechzeit",
+        "happy": "Fröhlich",
+        "neutral": "Neutral",
+        "sad": "Traurig",
+        "surprised": "Überrascht",
+        "angry": "Sauer",
+        "fearful": "Ängstlich",
+        "disgusted": "Angeekelt"
     },
     "startupoverlay": {
         "policyText": " ",
@@ -875,6 +908,7 @@
             "audioOnly": "„Nur Audio“ ein-/ausschalten",
             "audioRoute": "Audiogerät auswählen",
             "boo": "Buhen",
+            "breakoutRoom": "Breakout-Räume betreten/verlassen",
             "callQuality": "Qualitätseinstellungen",
             "cc": "Untertitel ein-/ausschalten",
             "chat": "Chatfenster öffnen / schließen",
@@ -958,7 +992,9 @@
         "hangup": "Konferenz verlassen",
         "help": "Hilfe",
         "invite": "Personen einladen",
+        "joinBreakoutRoom": "In Breakout-Raum wechseln",
         "laugh": "Lachen",
+        "leaveBreakoutRoom": "Breakout-Raum verlassen",
         "like": "Daumen hoch",
         "lobbyButtonDisable": "Lobbymodus deaktivieren",
         "lobbyButtonEnable": "Lobbymodus aktivieren",
@@ -1135,6 +1171,12 @@
     "lonelyMeetingExperience": {
         "button": "Andere einladen",
         "youAreAlone": "Nur Sie sind in dieser Konferenz"
+    },
+    "termsView": {
+        "header": "Nutzungsbedingungen"
+    },
+    "privacyView": {
+        "header": "Datenschutz"
     },
     "helpView": {
         "header": "Hilfecenter"

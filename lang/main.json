@@ -39,6 +39,23 @@
     "audioOnly": {
         "audioOnly": "Low bandwidth"
     },
+    "blankPage": {
+        "meetingEnded": "Meeting ended."
+    },
+    "breakoutRooms": {
+        "defaultName": "Breakout room #{{index}}",
+        "mainRoom": "Main room",
+        "actions": {
+            "add": "Add breakout room",
+            "autoAssign": "Auto assign to breakout rooms",
+            "close": "Close",
+            "join": "Join",
+            "leaveBreakoutRoom": "Leave breakout room",
+            "more": "More",
+            "remove": "Remove",
+            "sendToBreakoutRoom": "Send participant to:"
+        }
+    },
     "calendarSync": {
         "addMeetingURL": "Add a meeting link",
         "confirmAddLink": "Do you want to add a Jitsi link to this event?",
@@ -555,6 +572,8 @@
     "notify": {
         "allowAction": "Allow",
         "allowedUnmute": "You can unmute your microphone, start your camera or share your screen.",
+        "audioUnmuteBlockedTitle": "Mic unmute blocked!",
+        "audioUnmuteBlockedDescription": "Mic unmute operation has been temporarily blocked because of system limits.",
         "connectedOneMember": "{{name}} joined the meeting",
         "connectedThreePlusMembers": "{{name}} and many others joined the meeting",
         "connectedTwoMembers": "{{first}} and {{second}} joined the meeting",
@@ -605,7 +624,9 @@
         "moderationToggleDescription": "by {{participantDisplayName}}",
         "raiseHandAction": "Raise hand",
         "reactionSounds": "Disable sounds",
-        "groupTitle": "Notifications"
+        "groupTitle": "Notifications",
+        "videoUnmuteBlockedTitle": "Camera unmute blocked!",
+        "videoUnmuteBlockedDescription": "Camera unmute operation has been temporarily blocked because of system limits."
     },
     "participantsPane": {
         "close": "Close",
@@ -623,6 +644,7 @@
             "invite": "Invite Someone",
             "askUnmute": "Ask to unmute",
             "moreModerationActions": "More moderation options",
+            "moreParticipantOptions": "More participant options",
             "mute": "Mute",
             "muteAll": "Mute all",
             "muteEveryoneElse": "Mute everyone else",
@@ -741,7 +763,7 @@
     "profile": {
         "avatar": "avatar",
         "setDisplayNameLabel": "Set your display name",
-        "setEmailInput": "Enter e-mail",
+        "setEmailInput": "Enter email",
         "setEmailLabel": "Set your gravatar email",
         "title": "Profile"
     },
@@ -862,7 +884,14 @@
         "name": "Name",
         "seconds": "{{count}}s",
         "speakerStats": "Speaker Stats",
-        "speakerTime": "Speaker Time"
+        "speakerTime": "Speaker Time",
+        "happy": "Happy",
+        "neutral": "Neutral",
+        "sad": "Sad",
+        "surprised": "Surprised",
+        "angry": "Angry",
+        "fearful": "Fearful",
+        "disgusted": "Disgusted"
     },
     "startupoverlay": {
         "policyText": " ",
@@ -879,6 +908,7 @@
             "audioOnly": "Toggle audio only",
             "audioRoute": "Select the sound device",
             "boo": "Boo",
+            "breakoutRoom": "Join/leave breakout room",
             "callQuality": "Manage video quality",
             "cc": "Toggle subtitles",
             "chat": "Open / Close chat",
@@ -962,7 +992,9 @@
         "hangup": "Leave the meeting",
         "help": "Help",
         "invite": "Invite people",
+        "joinBreakoutRoom": "Join breakout room",
         "laugh": "Laugh",
+        "leaveBreakoutRoom": "Leave breakout room",
         "like": "Thumbs Up",
         "lobbyButtonDisable": "Disable lobby mode",
         "lobbyButtonEnable": "Enable lobby mode",
@@ -1139,6 +1171,12 @@
     "lonelyMeetingExperience": {
         "button": "Invite others",
         "youAreAlone": "You are the only one in the meeting"
+    },
+    "termsView": {
+        "header": "Terms"
+    },
+    "privacyView": {
+        "header": "Privacy"
     },
     "helpView": {
         "header": "Help center"

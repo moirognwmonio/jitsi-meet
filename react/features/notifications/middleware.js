@@ -19,7 +19,7 @@ import {
     showNotification,
     showParticipantJoinedNotification
 } from './actions';
-import { NOTIFICATION_TIMEOUT } from './constants';
+import { NOTIFICATION_TIMEOUT_TYPE } from './constants';
 import { joinLeaveNotificationsDisabled } from './functions';
 
 declare var interfaceConfig: Object;
@@ -54,15 +54,12 @@ MiddlewareRegistry.register(store => next => action => {
                 action.participant.id
             );
 
-            if (typeof interfaceConfig === 'object'
-                && participant
-                && !participant.local
-                && !action.participant.isReplaced) {
+            if (participant && !participant.local && !action.participant.isReplaced) {
                 store.dispatch(showNotification({
                     descriptionKey: 'notify.disconnected',
                     titleKey: 'notify.somebody',
                     title: participant.name
-                }, NOTIFICATION_TIMEOUT));
+                }, NOTIFICATION_TIMEOUT_TYPE.SHORT));
             }
         }
 
@@ -79,7 +76,7 @@ MiddlewareRegistry.register(store => next => action => {
         const { id, role } = action.participant;
         const localParticipant = getLocalParticipant(state);
 
-        if (localParticipant.id !== id) {
+        if (localParticipant?.id !== id) {
             return next(action);
         }
 
@@ -91,7 +88,7 @@ MiddlewareRegistry.register(store => next => action => {
             store.dispatch(showNotification({
                 titleKey: 'notify.moderator'
             },
-            NOTIFICATION_TIMEOUT));
+            NOTIFICATION_TIMEOUT_TYPE.SHORT));
         }
 
         return next(action);

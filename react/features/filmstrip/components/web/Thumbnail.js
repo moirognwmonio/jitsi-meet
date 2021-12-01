@@ -547,6 +547,7 @@ class Thumbnail extends Component<Props, State> {
 
         const { canPlayEventReceived } = this.state;
         const {
+            _currentLayout,
             _height,
             _isHidden,
             _isScreenSharing,
@@ -555,6 +556,8 @@ class Thumbnail extends Component<Props, State> {
             horizontalOffset,
             style
         } = this.props;
+
+        const tileViewActive = _currentLayout === LAYOUTS.TILE_VIEW;
 
         let styles: {
             avatar: Object,
@@ -578,7 +581,7 @@ class Thumbnail extends Component<Props, State> {
         if (!_isScreenSharing) {
             if (canPlayEventReceived || _participant.local) {
                 videoStyles = {
-                    objectFit: _height > 320 ? 'cover' : 'contain'
+                    objectFit: _height < 320 && tileViewActive ? 'contain' : 'cover'
                 };
             } else {
                 videoStyles = {
@@ -1119,6 +1122,7 @@ function _mapStateToProps(state, ownProps): Object {
     let _isMobilePortrait = false;
     const {
         startSilent,
+        defaultLocalDisplayName,
         disableLocalVideoFlip,
         iAmRecorder,
         iAmSipGateway
@@ -1175,7 +1179,7 @@ function _mapStateToProps(state, ownProps): Object {
         _connectionIndicatorDisabled: _isMobile
             || Boolean(state['features/base/config'].connectionIndicators?.disabled),
         _currentLayout,
-        _defaultLocalDisplayName: interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME,
+        _defaultLocalDisplayName: defaultLocalDisplayName,
         _disableLocalVideoFlip: Boolean(disableLocalVideoFlip),
         _isHidden: isLocal && iAmRecorder && !iAmSipGateway,
         _isAudioOnly: Boolean(state['features/base/audio-only'].enabled),

@@ -1,5 +1,6 @@
 // @flow
 
+import { withStyles } from '@material-ui/core/styles';
 import React, { Component, Fragment } from 'react';
 
 import keyboardShortcut from '../../../../../modules/keyboardshortcut/keyboardshortcut';
@@ -9,10 +10,9 @@ import {
     createToolbarEvent,
     sendAnalytics
 } from '../../../analytics';
-import { getToolbarButtons } from '../../../base/config';
-import { isToolbarButtonEnabled } from '../../../base/config/functions.web';
+import { getToolbarButtons, isToolbarButtonEnabled } from '../../../base/config';
 import { openDialog, toggleDialog } from '../../../base/dialog';
-import { isMobileBrowser } from '../../../base/environment/utils';
+import { isIosMobileBrowser, isMobileBrowser } from '../../../base/environment/utils';
 import { translate } from '../../../base/i18n';
 import JitsiMeetJS from '../../../base/lib-jitsi-meet';
 import {
@@ -56,7 +56,7 @@ import {
 import SecurityDialogButton from '../../../security/components/security-dialog/SecurityDialogButton';
 import { SettingsButton } from '../../../settings';
 import { SharedVideoButton } from '../../../shared-video/components';
-import { SpeakerStatsButton } from '../../../speaker-stats';
+import { SpeakerStatsButton } from '../../../speaker-stats/components/web';
 import {
     ClosedCaptionButton
 } from '../../../subtitles';
@@ -66,8 +66,7 @@ import {
     toggleTileView
 } from '../../../video-layout';
 import { VideoQualityDialog, VideoQualityButton } from '../../../video-quality/components';
-import { VideoBackgroundButton } from '../../../virtual-background';
-import { toggleBackgroundEffect } from '../../../virtual-background/actions';
+import { VideoBackgroundButton, toggleBackgroundEffect } from '../../../virtual-background';
 import { VIRTUAL_BACKGROUND_TYPE } from '../../../virtual-background/constants';
 import {
     setFullScreen,
@@ -149,6 +148,11 @@ type Props = {
     _fullScreen: boolean,
 
     /**
+     * Whether or not the app is running in an ios mobile browser.
+     */
+    _isIosMobile: boolean,
+
+    /**
      * Whether or not the app is running in mobile browser.
      */
     _isMobile: boolean,
@@ -225,6 +229,11 @@ type Props = {
     _virtualSource: Object,
 
     /**
+     * An object containing the CSS classes.
+     */
+    classes: Object,
+
+    /**
      * Invoked to active other features of the app.
      */
     dispatch: Function,
@@ -247,6 +256,17 @@ type Props = {
 };
 
 declare var APP: Object;
+
+const styles = theme => {
+    return {
+        overflowMenu: {
+            fontSize: 14,
+            listStyleType: 'none',
+            padding: '8px 0',
+            backgroundColor: theme.palette.ui03
+        }
+    };
+};
 
 /**
  * Implements the conference toolbox on React/Web.
@@ -560,6 +580,7 @@ class Toolbox extends Component<Props> {
     _getAllButtons() {
         const {
             _feedbackConfigured,
+            _isIosMobile,
             _isMobile,
             _screenSharing
         } = this.props;
@@ -635,7 +656,7 @@ class Toolbox extends Component<Props> {
             group: 2
         };
 
-        const fullscreen = !_isMobile && {
+        const fullscreen = !_isIosMobile && {
             key: 'fullscreen',
             Content: FullscreenButton,
             handleClick: this._onToolbarToggleFullScreen,
@@ -797,7 +818,10 @@ class Toolbox extends Component<Props> {
         }
 
         Object.values(buttons).forEach((button: any) => {
-            if (this.props._buttonsWithNotifyClick.includes(button.key)) {
+            if (
+                typeof button === 'object'
+                && this.props._buttonsWithNotifyClick.includes(button.key)
+            ) {
                 button.handleClick = () => APP.API.notifyToolbarButtonClicked(button.key);
             }
         });
@@ -1200,10 +1224,11 @@ class Toolbox extends Component<Props> {
         const {
             _isMobile,
             _overflowMenuVisible,
+            _reactionsEnabled,
             _toolbarButtons,
+            classes,
             showDominantSpeakerName,
-            t,
-            _reactionsEnabled
+            t
         } = this.props;
 
         const toolbarAccLabel = 'toolbar.accessibilityLabel.moreActionsMenu';
@@ -1240,7 +1265,7 @@ class Toolbox extends Component<Props> {
                                 }>
                                 <ul
                                     aria-label = { t(toolbarAccLabel) }
-                                    className = 'overflow-menu'
+                                    className = { classes.overflowMenu }
                                     id = 'overflow-menu'
                                     onKeyDown = { this._onEscKey }
                                     role = 'menu'>
@@ -1330,6 +1355,7 @@ function _mapStateToProps(state, ownProps) {
         _feedbackConfigured: Boolean(callStatsID),
         _fullScreen: fullScreen,
         _isProfileDisabled: Boolean(disableProfile),
+        _isIosMobile: isIosMobileBrowser(),
         _isMobile: isMobileBrowser(),
         _isVpaasMeeting: isVpaasMeeting(state),
         _localParticipantID: localParticipant?.id,
@@ -1346,4 +1372,4 @@ function _mapStateToProps(state, ownProps) {
     };
 }
 
-export default translate(connect(_mapStateToProps)(Toolbox));
+export default translate(connect(_mapStateToProps)(withStyles(styles)(Toolbox)));

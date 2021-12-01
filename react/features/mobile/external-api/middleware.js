@@ -24,8 +24,6 @@ import {
     getURLWithoutParams
 } from '../../base/connection';
 import {
-    isFatalJitsiConferenceError,
-    isFatalJitsiConnectionError,
     JitsiConferenceEvents } from '../../base/lib-jitsi-meet';
 import { MEDIA_TYPE } from '../../base/media';
 import { SET_AUDIO_MUTED, SET_VIDEO_MUTED } from '../../base/media/actionTypes';
@@ -45,6 +43,7 @@ import { SET_PAGE_RELOAD_OVERLAY_CANCELED } from '../../overlay/actionTypes';
 import { muteLocal } from '../../video-menu/actions';
 import { ENTER_PICTURE_IN_PICTURE } from '../picture-in-picture';
 
+import { READY_TO_CLOSE } from './actionTypes';
 import { setParticipantsWithScreenShare } from './actions';
 import { sendEvent } from './functions';
 import logger from './logger';
@@ -94,6 +93,7 @@ const eventEmitter = new NativeEventEmitter(ExternalAPI);
  * @returns {Function}
  */
 MiddlewareRegistry.register(store => next => action => {
+    const oldAudioMuted = store.getState()['features/base/media'].audio.muted;
     const result = next(action);
     const { type } = action;
 
@@ -116,7 +116,7 @@ MiddlewareRegistry.register(store => next => action => {
         // counterpart of the External API (or at least not in the
         // fatality/finality semantics attributed to
         // conferenceFailed:/onConferenceFailed).
-        if (!error.recoverable && !isFatalJitsiConnectionError(error) && !isFatalJitsiConferenceError(error)) {
+        if (!error.recoverable) {
             _sendConferenceEvent(store, /* action */ {
                 error: _toErrorString(error),
                 ...data
@@ -190,17 +190,23 @@ MiddlewareRegistry.register(store => next => action => {
         break;
     }
 
+    case READY_TO_CLOSE:
+        sendEvent(store, type, /* data */ {});
+        break;
+
     case SET_ROOM:
         _maybeTriggerEarlyConferenceWillJoin(store, action);
         break;
 
     case SET_AUDIO_MUTED:
-        sendEvent(
-            store,
-            'AUDIO_MUTED_CHANGED',
-            /* data */ {
-                muted: action.muted
-            });
+        if (action.muted !== oldAudioMuted) {
+            sendEvent(
+                store,
+                'AUDIO_MUTED_CHANGED',
+                /* data */ {
+                    muted: action.muted
+                });
+        }
         break;
 
     case SET_PAGE_RELOAD_OVERLAY_CANCELED:
