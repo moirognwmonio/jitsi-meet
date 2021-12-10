@@ -58,6 +58,16 @@ type Props = {
     _rToken: string,
 
     /**
+     * Whether or not the local participant is screensharing.
+     */
+    _screensharing: boolean,
+
+    /**
+     * Whether or not the screenshot capture feature is enabled.
+     */
+    _screenshotCaptureEnabled: boolean,
+
+    /**
      * Access token's expiration date as UNIX timestamp.
      */
     _tokenExpireDate?: number,
@@ -128,6 +138,7 @@ class AbstractStartRecordingDialog extends Component<Props, State> {
         this._onSelectedRecordingServiceChanged
             = this._onSelectedRecordingServiceChanged.bind(this);
         this._onSharingSettingChanged = this._onSharingSettingChanged.bind(this);
+        this._toggleScreenshotCapture = this._toggleScreenshotCapture.bind(this);
 
         let selectedRecordingService;
 
@@ -315,6 +326,7 @@ class AbstractStartRecordingDialog extends Component<Props, State> {
             createRecordingDialogEvent('start', 'confirm.button', attributes)
         );
 
+        this._toggleScreenshotCapture();
         _conference.startRecording({
             mode: JitsiRecordingConstants.mode.FILE,
             appData
@@ -326,6 +338,11 @@ class AbstractStartRecordingDialog extends Component<Props, State> {
 
         return true;
     }
+
+    /**
+     * To be overwritten by web component.
+     */
+    _toggleScreenshotCapture:() => void;
 
     /**
      * Renders the platform specific dialog content.

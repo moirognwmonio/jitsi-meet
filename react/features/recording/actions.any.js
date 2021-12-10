@@ -170,7 +170,6 @@ export function showStartedRecordingNotification(
         const initiatorId = getResourceId(initiator);
         const participantName = getParticipantDisplayName(state, initiatorId);
         let dialogProps = {
-            customActionNameKey: undefined,
             descriptionKey: participantName ? 'liveStreaming.onBy' : 'liveStreaming.on',
             descriptionArguments: { name: participantName },
             isDismissAllowed: true,
@@ -199,15 +198,16 @@ export function showStartedRecordingNotification(
                 const tenant = getVpaasTenant(state);
 
                 try {
-                    const link = await getRecordingLink(recordingSharingUrl, sessionId, region, tenant);
+                    const response = await getRecordingLink(recordingSharingUrl, sessionId, region, tenant);
+                    const { url: link, urlExpirationTimeMillis: ttl } = response;
 
                     if (typeof APP === 'object') {
-                        APP.API.notifyRecordingLinkAvailable(link);
+                        APP.API.notifyRecordingLinkAvailable(link, ttl);
                     }
 
                     // add the option to copy recording link
-                    dialogProps.customActionNameKey = 'recording.copyLink';
-                    dialogProps.customActionHandler = () => copyText(link);
+                    dialogProps.customActionNameKey = [ 'recording.copyLink' ];
+                    dialogProps.customActionHandler = [ () => copyText(link) ];
                     dialogProps.titleKey = 'recording.on';
                     dialogProps.descriptionKey = 'recording.linkGenerated';
                     dialogProps.isDismissAllowed = false;

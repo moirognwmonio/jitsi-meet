@@ -65,15 +65,21 @@ export async function createVirtualBackgroundEffect(virtualBackground: Object, d
                     titleKey: 'virtualBackground.backgroundEffectError'
                 }, NOTIFICATION_TIMEOUT_TYPE.LONG));
             } else {
-                logger.error('Looks like WebAssembly is disabled or not supported on this browser');
+                logger.error('Looks like WebAssembly is disabled or not supported on this browser', err);
                 dispatch(showWarningNotification({
                     titleKey: 'virtualBackground.webAssemblyWarning',
-                    description: 'WebAssembly disabled or not supported by this browser'
+                    descriptionKey: 'virtualBackground.webAssemblyWarningDescription'
                 }, NOTIFICATION_TIMEOUT_TYPE.LONG));
             }
 
             return;
         }
+    } else if (isWasmDisabled) {
+        dispatch(showWarningNotification({
+            titleKey: 'virtualBackground.backgroundEffectError'
+        }, NOTIFICATION_TIMEOUT_TYPE.LONG));
+
+        return;
     }
 
     const modelBufferOffset = tflite._getModelBufferMemoryOffset();

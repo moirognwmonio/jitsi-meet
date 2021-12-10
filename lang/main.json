@@ -54,6 +54,11 @@
             "more": "More",
             "remove": "Remove",
             "sendToBreakoutRoom": "Send participant to:"
+        },
+        "notifications": {
+            "joinedTitle": "Breakout Rooms",
+            "joined": "Joining the \"{{name}}\" breakout room",
+            "joinedMainRoom": "Joining the main room"
         }
     },
     "calendarSync": {
@@ -175,7 +180,8 @@
         "joinInApp": "Join this meeting using the app",
         "launchWebButton": "Launch in web",
         "title": "Launching your meeting in {{app}}...",
-        "tryAgainButton": "Try again in desktop"
+        "tryAgainButton": "Try again in desktop",
+        "unsupportedBrowser": "It looks like you're using a browser we don't support."
     },
     "defaultLink": "e.g. {{url}}",
     "defaultNickname": "ex. Jane Pink",
@@ -413,6 +419,7 @@
         "desktopShareError": "Could not create desktop share",
         "desktopShare":"Desktop share",
         "webAssemblyWarning": "WebAssembly not supported",
+        "webAssemblyWarningDescription": "WebAssembly disabled or not supported by this browser",
         "backgroundEffectError": "Failed to apply background effect."
     },
     "feedback": {
@@ -585,6 +592,9 @@
         "invitedThreePlusMembers": "{{name}} and {{count}} others have been invited",
         "invitedTwoMembers": "{{first}} and {{second}} have been invited",
         "kickParticipant": "{{kicked}} was kicked by {{kicker}}",
+        "leftOneMember": "{{name}} left the meeting",
+        "leftThreePlusMembers": "{{name}} and many others left the meeting",
+        "leftTwoMembers": "{{first}} and {{second}} left the meeting",
         "me": "Me",
         "moderator": "You're now a moderator",
         "muted": "You have started the conversation muted.",
@@ -596,8 +606,10 @@
         "passwordRemovedRemotely": "$t(lockRoomPasswordUppercase) removed by another participant",
         "passwordSetRemotely": "$t(lockRoomPasswordUppercase) set by another participant",
         "raisedHand": "Would like to speak.",
+        "raisedHands": "{{participantName}} and {{raisedHands}} more people",
         "screenShareNoAudio": " Share audio box was not checked in the window selection screen.",
         "screenShareNoAudioTitle": "Couldn't share system audio!",
+        "selfViewTitle": "You can always un-hide the self-view from settings",
         "somebody": "Somebody",
         "startSilentTitle": "You joined with no audio output!",
         "startSilentDescription": "Rejoin the meeting to enable audio",
@@ -624,6 +636,7 @@
         "moderationToggleDescription": "by {{participantDisplayName}}",
         "raiseHandAction": "Raise hand",
         "reactionSounds": "Disable sounds",
+        "reactionSoundsForAll": "Disable sounds for all",
         "groupTitle": "Notifications",
         "videoUnmuteBlockedTitle": "Camera unmute blocked!",
         "videoUnmuteBlockedDescription": "Camera unmute operation has been temporarily blocked because of system limits."
@@ -651,7 +664,8 @@
             "stopEveryonesVideo": "Stop everyone's video",
             "stopVideo": "Stop video",
             "unblockEveryoneMicCamera": "Unblock everyone's mic and camera",
-            "videoModeration": "Start their video"
+            "videoModeration": "Start their video",
+            "moreModerationControls": "More moderation controls"
         },
         "search": "Search participants"
     },
@@ -846,6 +860,7 @@
         "sounds": "Sounds",
         "speakers": "Speakers",
         "startAudioMuted": "Everyone starts muted",
+        "startReactionsMuted": "Mute reaction sounds for everyone",
         "startVideoMuted": "Everyone starts hidden",
         "talkWhileMuted": "Talk while muted",
         "title": "Settings"
@@ -1111,6 +1126,7 @@
         "domuteVideoOfOthers": "Disable camera of everyone else",
         "flip": "Flip",
         "grantModerator": "Grant Moderator Rights",
+        "hideSelfView": "Hide self view",
         "kick": "Kick out",
         "moderator": "Moderator",
         "mute": "Participant is muted",

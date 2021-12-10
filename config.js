@@ -86,6 +86,9 @@ var config = {
     // Disables polls feature.
     // disablePolls: false,
 
+    // Disables self-view tile. (hides it from tile view and from filmstrip)
+    // disableSelfView: false,
+
     // Disables ICE/UDP by filtering out local and remote UDP candidates in
     // signalling.
     // webrtcIceUdpDisable: false,
@@ -503,8 +506,14 @@ var config = {
     // and microsoftApiApplicationClientID
     // enableCalendarIntegration: false,
 
-    // When 'true', it shows an intermediate page before joining, where the user can configure their devices.
-    // prejoinPageEnabled: false,
+    // Configs for prejoin page.
+    // prejoinConfig: {
+    //     // When 'true', it shows an intermediate page before joining, where the user can configure their devices.
+    //     // This replaces `prejoinPageEnabled`.
+    //     enabled: true,
+    //     // List of buttons to hide from the extra join options dropdown.
+    //     hideExtraJoinButtons: ['no-audio', 'by-phone']
+    // },
 
     // When 'true', the user cannot edit the display name.
     // (Mainly useful when used in conjuction with the JWT so the JWT name becomes read only.)
@@ -1001,6 +1010,9 @@ var config = {
 
     // If true, tile view will not be enabled automatically when the participants count threshold is reached.
     // disableTileView: true,
+
+    // If true, the tiles will be displayed contained within the available space rather than enlarged to cover it.
+    // disableTileEnlargement: true,
 
     // Controls the visibility and behavior of the top header conference info labels.
     // If a label's id is not in any of the 2 arrays, it will not be visible at all on the header.
