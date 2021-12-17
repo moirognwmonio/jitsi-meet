@@ -77,17 +77,29 @@ var config = {
         // callStatsThreshold: 5 // enable callstats for 5% of the users.
     },
 
+    // Feature Flags.
+    flags: {
+        // Enables source names in the signaling.
+        // sourceNameSignaling: false,
+    },
+
     // Disables moderator indicators.
     // disableModeratorIndicator: false,
 
     // Disables the reactions feature.
     // disableReactions: true,
 
+    // Disables the reactions moderation feature.
+    // disableReactionsModeration: false,
+
     // Disables polls feature.
     // disablePolls: false,
 
     // Disables self-view tile. (hides it from tile view and from filmstrip)
     // disableSelfView: false,
+
+    // Disables self-view settings in UI
+    // disableSelfViewSettings: false,
 
     // Disables ICE/UDP by filtering out local and remote UDP candidates in
     // signalling.
@@ -490,6 +502,9 @@ var config = {
 
     // Disables profile and the edit of all fields from the profile settings (display name and email)
     // disableProfile: false,
+
+    // Hides the email section under profile settings.
+    // hideEmailInSettings: false,
 
     // Whether or not some features are checked based on token.
     // enableFeaturesBasedOnToken: false,
@@ -1032,10 +1047,10 @@ var config = {
     // },
 
     // Hides the conference subject
-    // hideConferenceSubject: true,
+    // hideConferenceSubject: false,
 
     // Hides the conference timer.
-    // hideConferenceTimer: true,
+    // hideConferenceTimer: false,
 
     // Hides the recording label
     // hideRecordingLabel: false,
@@ -1045,6 +1060,9 @@ var config = {
 
     // Sets the conference subject
     // subject: 'Conference Subject',
+
+    // Sets the conference local subject
+    // localSubject: 'Conference Local Subject',
 
     // This property is related to the use case when jitsi-meet is used via the IFrame API. When the property is true
     // jitsi-meet will use the local storage of the host page instead of its own. This option is useful if the browser
@@ -1150,10 +1168,14 @@ var config = {
     //     'lobby.joinRejectedMessage', // shown when while in a lobby, user's request to join is rejected
     //     'lobby.notificationTitle', // shown when lobby is toggled and when join requests are allowed / denied
     //     'localRecording.localRecording', // shown when a local recording is started
+    //     'notify.chatMessages', // shown when receiving chat messages while the chat window is closed
     //     'notify.disconnected', // shown when a participant has left
     //     'notify.connectedOneMember', // show when a participant joined
     //     'notify.connectedTwoMembers', // show when two participants joined simultaneously
     //     'notify.connectedThreePlusMembers', // show when more than 2 participants joined simultaneously
+    //     'notify.leftOneMember', // show when a participant left
+    //     'notify.leftTwoMembers', // show when two participants left simultaneously
+    //     'notify.leftThreePlusMembers', // show when more than 2 participants left simultaneously
     //     'notify.grantedTo', // shown when moderator rights were granted to a participant
     //     'notify.invitedOneMember', // shown when 1 participant has been invited
     //     'notify.invitedThreePlusMembers', // shown when 3+ participants have been invited

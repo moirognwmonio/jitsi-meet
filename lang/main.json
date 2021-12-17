@@ -470,7 +470,7 @@
         "noPassword": "None",
         "noRoom": "No room was specified to dial-in into.",
         "numbers": "Dial-in Numbers",
-        "password": "$t(lockRoomPasswordUppercase):",
+        "password": "$t(lockRoomPasswordUppercase): ",
         "sip": "SIP address",
         "title": "Share",
         "tooltip": "Share link and dial-in info for this meeting",
@@ -581,10 +581,12 @@
         "allowedUnmute": "You can unmute your microphone, start your camera or share your screen.",
         "audioUnmuteBlockedTitle": "Mic unmute blocked!",
         "audioUnmuteBlockedDescription": "Mic unmute operation has been temporarily blocked because of system limits.",
+        "chatMessages": "Chat messages",
         "connectedOneMember": "{{name}} joined the meeting",
         "connectedThreePlusMembers": "{{name}} and many others joined the meeting",
         "connectedTwoMembers": "{{first}} and {{second}} joined the meeting",
         "disconnected": "disconnected",
+        "displayNotifications": "Display notifications for",
         "focus": "Conference focus",
         "focusFail": "{{component}} not available - retry in {{ms}} sec",
         "hostAskedUnmute": "The moderator would like you to speak",
@@ -638,8 +640,8 @@
         "reactionSounds": "Disable sounds",
         "reactionSoundsForAll": "Disable sounds for all",
         "groupTitle": "Notifications",
-        "videoUnmuteBlockedTitle": "Camera unmute blocked!",
-        "videoUnmuteBlockedDescription": "Camera unmute operation has been temporarily blocked because of system limits."
+        "videoUnmuteBlockedTitle": "Camera unmute and desktop sharing blocked!",
+        "videoUnmuteBlockedDescription": "Camera unmute and desktop sharing operation have been temporarily blocked because of system limits."
     },
     "participantsPane": {
         "close": "Close",
@@ -824,8 +826,8 @@
     "security": {
         "about": "You can add a $t(lockRoomPassword) to your meeting. Participants will need to provide the $t(lockRoomPassword) before they are allowed to join the meeting.",
         "aboutReadOnly": "Moderator participants can add a $t(lockRoomPassword) to the meeting. Participants will need to provide the $t(lockRoomPassword) before they are allowed to join the meeting.",
-        "insecureRoomNameWarning": "The room name is unsafe. Unwanted participants may join your conference. Consider securing your meeting using the security button.",
-        "securityOptions": "Security options"
+        "header": "Security Options",
+        "insecureRoomNameWarning": "The room name is unsafe. Unwanted participants may join your conference. Consider securing your meeting using the security button."
     },
     "settings": {
         "calendar": {
@@ -857,6 +859,7 @@
         "selectAudioOutput": "Audio output",
         "selectCamera": "Camera",
         "selectMic": "Microphone",
+        "selfView": "Self view",
         "sounds": "Sounds",
         "speakers": "Speakers",
         "startAudioMuted": "Everyone starts muted",
@@ -893,20 +896,20 @@
     },
     "speaker": "Speaker",
     "speakerStats": {
-        "search": "Search",
+        "angry": "Angry",
+        "disgusted": "Disgusted",
+        "fearful": "Fearful",
+        "happy": "Happy",
         "hours": "{{count}}h",
         "minutes": "{{count}}m",
         "name": "Name",
-        "seconds": "{{count}}s",
-        "speakerStats": "Speaker Stats",
-        "speakerTime": "Speaker Time",
-        "happy": "Happy",
         "neutral": "Neutral",
         "sad": "Sad",
-        "surprised": "Surprised",
-        "angry": "Angry",
-        "fearful": "Fearful",
-        "disgusted": "Disgusted"
+        "search": "Search",
+        "seconds": "{{count}}s",
+        "speakerTime": "Speaker Time",
+        "speakerStats": "Speaker Stats",
+        "surprised": "Surprised"
     },
     "startupoverlay": {
         "policyText": " ",
@@ -949,8 +952,8 @@
             "mute": "Mute / Unmute",
             "muteEveryone": "Mute everyone",
             "muteEveryoneElse": "Mute everyone else",
-            "muteEveryonesVideo": "Disable everyone's video",
-            "muteEveryoneElsesVideo": "Disable everyone else's video",
+            "muteEveryonesVideoStream": "Stop everyone's video",
+            "muteEveryoneElsesVideoStream": "Stop everyone else's video",
             "participants": "Participants",
             "pip": "Toggle Picture-in-Picture mode",
             "privateMessage": "Send private message",
