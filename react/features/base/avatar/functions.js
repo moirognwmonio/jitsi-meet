@@ -3,6 +3,8 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import _ from 'lodash';
 
+import { GRAVATAR_BASE_URL } from './constants';
+
 const AVATAR_COLORS = [
     '#6A50D3',
     '#FF9B42',
@@ -72,12 +74,11 @@ export function getInitials(s: ?string) {
 }
 
 /**
- * Checks if the passed URL should be loaded with CORS.
+ * Checks if the passed URL is pointing to the gravatar service.
  *
  * @param {string} url - The URL.
- * @param {Array<string>} corsURLs - The URL pattern that matches a URL that needs to be handled with CORS.
  * @returns {void}
  */
-export function isCORSAvatarURL(url: string | any = '', corsURLs: Array<string> = []) {
-    return corsURLs.some(pattern => url.startsWith(pattern));
+export function isGravatarURL(url: string = '') {
+    return url.startsWith(GRAVATAR_BASE_URL);
 }

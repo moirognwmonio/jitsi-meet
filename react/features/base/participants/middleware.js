@@ -488,8 +488,8 @@ function _participantJoinedOrUpdated(store, next, action) {
             const updatedParticipant = getParticipantById(getState(), participantId);
 
             getFirstLoadableAvatarUrl(updatedParticipant, store)
-                .then(urlData => {
-                    dispatch(setLoadableAvatarUrl(participantId, urlData?.src, urlData?.isUsingCORS));
+                .then(url => {
+                    dispatch(setLoadableAvatarUrl(participantId, url));
                 });
         }
     }

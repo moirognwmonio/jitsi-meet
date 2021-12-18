@@ -540,23 +540,20 @@ export function pinParticipant(id) {
  *
  * @param {string} participantId - The ID of the participant.
  * @param {string} url - The new URL.
- * @param {boolean} useCORS - Indicates whether we need to use CORS for this URL.
  * @returns {{
  *     type: SET_LOADABLE_AVATAR_URL,
  *     participant: {
  *         id: string,
- *         loadableAvatarUrl: string,
- *         loadableAvatarUrlUseCORS: boolean
+ *         loadableAvatarUrl: string
  *     }
  * }}
 */
-export function setLoadableAvatarUrl(participantId, url, useCORS) {
+export function setLoadableAvatarUrl(participantId, url) {
     return {
         type: SET_LOADABLE_AVATAR_URL,
         participant: {
             id: participantId,
-            loadableAvatarUrl: url,
-            loadableAvatarUrlUseCORS: useCORS
+            loadableAvatarUrl: url
         }
     };
 }
