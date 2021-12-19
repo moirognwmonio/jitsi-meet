@@ -27,6 +27,7 @@ jobs:
       - run:
           name: Make
           command: |
+            export NODE_OPTIONS=--openssl-legacy-provider
             make
 
       - run:
