@@ -21,6 +21,7 @@ jobs:
       - run:
           name: NPM install
           command: |
+            export NODE_OPTIONS=--openssl-legacy-provider
             npm install
 
       - run:
