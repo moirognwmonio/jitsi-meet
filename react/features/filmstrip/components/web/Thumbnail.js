@@ -10,6 +10,7 @@ import { isMobileBrowser } from '../../../base/environment/utils';
 import { MEDIA_TYPE, VideoTrack } from '../../../base/media';
 import {
     getParticipantByIdOrUndefined,
+    hasRaisedHand,
     pinParticipant
 } from '../../../base/participants';
 import { connect } from '../../../base/redux';
@@ -154,6 +155,11 @@ export type Props = {|
     _participant: Object,
 
     /**
+     * Whether or not the participant has the hand raised.
+     */
+    _raisedHand: boolean,
+
+    /**
      * The video track that will be displayed in the thumbnail.
      */
     _videoTrack: ?Object,
@@ -230,7 +236,7 @@ const defaultStyles = theme => {
                 marginRight: '4px'
             },
 
-            '&:not(.top-indicators) > *:last-child': {
+            '&:not(.top-indicators) > span:last-child': {
                 marginRight: '6px'
             }
         },
@@ -245,14 +251,23 @@ const defaultStyles = theme => {
             backgroundColor: theme.palette.ui02
         },
 
+        borderIndicator: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            zIndex: '9',
+            borderRadius: '4px'
+        },
+
         activeSpeaker: {
             '& .active-speaker-indicator': {
-                boxShadow: `inset 0px 0px 0px 4px ${theme.palette.link01Active} !important`,
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                zIndex: '9',
-                borderRadius: '4px'
+                boxShadow: `inset 0px 0px 0px 4px ${theme.palette.link01Active} !important`
+            }
+        },
+
+        raisedHand: {
+            '& .raised-hand-border': {
+                boxShadow: `inset 0px 0px 0px 2px ${theme.palette.warning02} !important`
             }
         }
     };
@@ -454,12 +469,17 @@ class Thumbnail extends Component<Props, State> {
             _isHidden,
             _isScreenSharing,
             _participant,
+            _videoTrack,
             _width,
             horizontalOffset,
             style
         } = this.props;
 
+
         const tileViewActive = _currentLayout === LAYOUTS.TILE_VIEW;
+        const jitsiVideoTrack = _videoTrack?.jitsiTrack;
+        const track = jitsiVideoTrack?.track;
+        const isPortraitVideo = ((track && track.getSettings()?.aspectRatio) || 1) < 1;
 
         let styles: {
             avatar: Object,
@@ -479,7 +499,7 @@ class Thumbnail extends Component<Props, State> {
         }
 
         let videoStyles = null;
-        const doNotStretchVideo = (_height < 320 && tileViewActive)
+        const doNotStretchVideo = (isPortraitVideo && tileViewActive)
             || _disableTileEnlargement
             || _isScreenSharing;
 
@@ -661,10 +681,15 @@ class Thumbnail extends Component<Props, State> {
             _participant,
             _currentLayout,
             _isAnyParticipantPinned,
+            _raisedHand,
             classes
         } = this.props;
 
         className += ` ${DISPLAY_MODE_TO_CLASS_NAME[displayMode]}`;
+
+        if (_raisedHand) {
+            className += ` ${classes.raisedHand}`;
+        }
 
         if (_currentLayout === LAYOUTS.TILE_VIEW) {
             if (!_isDominantSpeakerDisabled && _participant?.dominantSpeaker) {
@@ -828,7 +853,8 @@ class Thumbnail extends Component<Props, State> {
                     </div>
                 )}
                 <ThumbnailAudioIndicator _audioTrack = { _audioTrack } />
-                <div className = 'active-speaker-indicator' />
+                <div className = { clsx(classes.borderIndicator, 'raised-hand-border') } />
+                <div className = { clsx(classes.borderIndicator, 'active-speaker-indicator') } />
             </span>
         );
     }
@@ -892,7 +918,6 @@ function _mapStateToProps(state, ownProps): Object {
     const { localFlipX } = state['features/base/settings'];
     const _isMobile = isMobileBrowser();
 
-
     switch (_currentLayout) {
     case LAYOUTS.VERTICAL_FILMSTRIP_VIEW:
     case LAYOUTS.HORIZONTAL_FILMSTRIP_VIEW: {
@@ -948,6 +973,7 @@ function _mapStateToProps(state, ownProps): Object {
         _isVideoPlayable: id && isVideoPlayable(state, id),
         _localFlipX: Boolean(localFlipX),
         _participant: participant,
+        _raisedHand: hasRaisedHand(participant),
         _videoTrack,
         ...size
     };
