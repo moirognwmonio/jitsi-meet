@@ -103,7 +103,8 @@ export const brandedDialog = {
     },
 
     terminateWaitingCallButtonVSale: {
-        backgroundColor: '#bf2025'
+        backgroundColor: '#bf2025',
+        height: 80
     },
 
     terminateWaitingCallButtonWrapperVSale: {
