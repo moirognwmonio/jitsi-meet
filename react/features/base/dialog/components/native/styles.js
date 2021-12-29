@@ -74,7 +74,8 @@ export const brandedDialog = {
     },
 
     buttonWrapper: {
-        alignItems: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: BORDER_RADIUS,
         flexDirection: 'row'
     },

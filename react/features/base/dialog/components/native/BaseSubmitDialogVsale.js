@@ -49,7 +49,7 @@ class BaseSubmitDialogVsale<P: Props, S: *> extends BaseDialogVsale<P, S> {
         const additionalButtons = this._renderAdditionalButtons();
 
         return (
-            <View>
+            <View style = { brandedDialog.waitingMsgVSale }>
                 <View style = { brandedDialog.mainWrapper }>
                     { this._renderSubmittable() }
                 </View>
