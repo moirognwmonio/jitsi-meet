@@ -77,7 +77,6 @@ export const brandedDialog = {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: BORDER_RADIUS,
-        flexDirection: 'row'
     },
 
     closeWrapper: {
@@ -86,12 +85,12 @@ export const brandedDialog = {
     },
 
     mainWrapper: {
-        alignSelf: 'stretch',
+        alignSelf: 'center',
         padding: BoxModel.padding * 2,
 
         // The added bottom padding is to compensate the empty space around the
         // close icon.
-        paddingBottom: BoxModel.padding * 3
+        // paddingBottom: BoxModel.padding * 3
     },
 
     overlay: {
