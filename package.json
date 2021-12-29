@@ -157,6 +157,18 @@
     "validate": "npm ls",
     "start": "make dev",
     "ios": "react-native run-ios",
-    "android": "react-native run-android"
+    "android": "react-native run-android",
+    "clean-install": "rm -rf node_modules && npm i && cd ios && pod install",
+    "clean-android-build": "rm -rf jitsi-maven-repository && mkdir jitsi-maven-repository",
+    "build-android": "npm run clean-android-build && ./android/scripts/release-sdk.sh ./jitsi-maven-repository",
+    "clean-ios-build": "rm -rf ios/sdk/out && mkdir -p ios/sdk/out",
+    "clean-ios": "xcodebuild clean -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeet",
+    "archive-ios-x86": "xcodebuild archive -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeetSDK  -configuration Release -sdk iphonesimulator -destination='generic/platform=iOS Simulator' -archivePath ios/sdk/out/ios-simulator VALID_ARCHS=x86_64 ENABLE_BITCODE=NO SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES",
+    "archive-ios-arm64": "xcodebuild archive -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeetSDK  -configuration Release -sdk iphoneos -destination='generic/platform=iOS' -archivePath ios/sdk/out/ios-device VALID_ARCHS=arm64 ENABLE_BITCODE=NO SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES",
+    "create-framework": "xcodebuild -create-xcframework -framework ios/sdk/out/ios-device.xcarchive/Products/Library/Frameworks/JitsiMeetSDK.framework -framework ios/sdk/out/ios-simulator.xcarchive/Products/Library/Frameworks/JitsiMeetSDK.framework -output ios/sdk/out/JitsiMeetSDK.xcframework",
+    "copy-web-rtc": "cp -a node_modules/react-native-webrtc/apple/WebRTC.xcframework ios/sdk/out",
+    "copy-to-release": "cp -a ios/sdk/out/WebRTC.xcframework jitsi-meet-ios-sdk-releases/Frameworks && cp -a ios/sdk/out/JitsiMeetSDK.xcframework jitsi-meet-ios-sdk-releases/Frameworks",
+    "create-release-dir": "rm -rf jitsi-meet-ios-sdk-releases && mkdir jitsi-meet-ios-sdk-releases && mkdir jitsi-meet-ios-sdk-releases/Frameworks && npm run copy-to-release",
+    "build-ios": "npm run clean-ios-build && npm run clean-ios && npm run archive-ios-x86 && npm run archive-ios-arm64 && npm run create-framework && npm run copy-web-rtc && npm run create-release-dir"
   }
 }

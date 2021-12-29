@@ -1,3 +1,27 @@
+# Jitsi Meet Fork - Softhouse Gr
+
+## Install dependencies
+
+```shell
+$ npm install
+$ cd ios
+$ pod install
+```
+
+## Export artifacts
+
+1) iOS
+```shell
+$ npm run build-ios
+```
+
+2) Android
+```shell
+$ npm run build-android
+```
+
+You can also use the defaults release scripts that are provided in {ios || android}/scripts/release-sdk.sh
+
 # Jitsi Meet - Secure, Simple and Scalable Video Conferences
 
 Jitsi Meet is an open-source (Apache) WebRTC JavaScript application that uses [Jitsi Videobridge](https://jitsi.org/videobridge) to provide high quality, [secure](https://jitsi.org/security) and scalable video conferences. Jitsi Meet in action can be seen at [here at the session #482 of the VoIP Users Conference](http://youtu.be/7vFUVClsNh0).
