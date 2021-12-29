@@ -7,7 +7,7 @@ PROJECT_REPO=$(realpath ${THIS_DIR}/../..)
 RELEASE_REPO=$(realpath ${THIS_DIR}/../../../jitsi-meet-ios-sdk-releases)
 DEFAULT_SDK_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${THIS_DIR}/../sdk/src/Info.plist)
 SDK_VERSION=${OVERRIDE_SDK_VERSION:-${DEFAULT_SDK_VERSION}}
-DO_GIT_TAG=${GIT_TAG:-0}
+#DO_GIT_TAG=${GIT_TAG:-0}
 
 
 echo "Releasing Jitsi Meet SDK ${SDK_VERSION}"
@@ -54,9 +54,9 @@ xcodebuild -create-xcframework \
     -framework ios/sdk/out/ios-device.xcarchive/Products/Library/Frameworks/JitsiMeetSDK.framework \
     -framework ios/sdk/out/ios-simulator.xcarchive/Products/Library/Frameworks/JitsiMeetSDK.framework \
     -output ios/sdk/out/JitsiMeetSDK.xcframework
-if [[ $DO_GIT_TAG == 1 ]]; then
-    git tag ios-sdk-${SDK_VERSION}
-fi
+#if [[ $DO_GIT_TAG == 1 ]]; then
+#    git tag ios-sdk-${SDK_VERSION}
+#fi
 popd
 
 pushd ${RELEASE_REPO}
@@ -66,11 +66,11 @@ cp -a ${PROJECT_REPO}/ios/sdk/out/JitsiMeetSDK.xcframework Frameworks/
 cp -a ${PROJECT_REPO}/node_modules/react-native-webrtc/apple/WebRTC.xcframework Frameworks/
 
 # Add all files to git
-if [[ $DO_GIT_TAG == 1 ]]; then
-    git add -A .
-    git commit -m "${SDK_VERSION}"
-    git tag ${SDK_VERSION}
-fi
+#if [[ $DO_GIT_TAG == 1 ]]; then
+#    git add -A .
+#    git commit -m "${SDK_VERSION}"
+#    git tag ${SDK_VERSION}
+#fi
 
 popd
 
