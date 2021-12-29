@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import type { Dispatch } from 'redux';
 
-import { ConfirmDialog } from '../../../base/dialog';
+import { ConfirmDialogVsale } from '../../../base/dialog';
 import { translate } from '../../../base/i18n';
 import { connect } from '../../../base/redux';
 import { openLoginDialog, cancelWaitForOwner } from '../../actions.native';
@@ -62,11 +62,11 @@ class WaitForOwnerDialog extends Component<Props> {
         } = this.props;
 
         return (
-            <ConfirmDialog
-                cancelKey = 'dialog.Cancel'
+            <ConfirmDialogVsale
+                cancelKey = 'dialog.EndCallVSale'
                 contentKey = {
                     {
-                        key: 'dialog.WaitForHostMsgWOk',
+                        key: 'dialog.WaitMessageVSale',
                         params: { room }
                     }
                 }

@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import type { Dispatch } from 'redux';
 
-import { Dialog } from '../../../base/dialog';
+import { ConfirmDialogVsale } from '../../../base/dialog';
 import { translate, translateToHTML } from '../../../base/i18n';
 import { connect } from '../../../base/redux';
 import { cancelWaitForOwner } from '../../actions.web';
@@ -100,7 +100,8 @@ class WaitForOwnerDialog extends PureComponent<Props> {
         } = this.props;
 
         return (
-            <Dialog
+            <ConfirmDialogVsale
+                cancelKey = 'dialog.EndCallVSale'
                 hideCloseIconButton = { true }
                 okKey = { t('dialog.IamHost') }
                 onCancel = { this._onCancelWaitForOwner }
@@ -113,7 +114,7 @@ class WaitForOwnerDialog extends PureComponent<Props> {
                             t, 'dialog.WaitForHostMsg', { room })
                     }
                 </span>
-            </Dialog>
+            </ConfirmDialogVsale>
         );
     }
 }
