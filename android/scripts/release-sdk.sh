@@ -10,8 +10,9 @@ MVN_HTTP=0
 DEFAULT_SDK_VERSION=$(grep sdkVersion ${THIS_DIR}/../gradle.properties | cut -d"=" -f2)
 SDK_VERSION=${OVERRIDE_SDK_VERSION:-${DEFAULT_SDK_VERSION}}
 RN_VERSION=$(jq -r '.version' ${THIS_DIR}/../../node_modules/react-native/package.json)
-JSC_VERSION="r"$(jq -r '.dependencies."jsc-android"' ${THIS_DIR}/../../node_modules/react-native/package.json | cut -d . -f 1 | cut -c 2-)
-DO_GIT_TAG=${GIT_TAG:-0}
+#JSC_VERSION="r"$(jq -r '.dependencies."jsc-android"' ${THIS_DIR}/../../node_modules/react-native/package.json | cut -d . -f 1 | cut -c 2-)
+HERMES_VERSION=$(jq -r '.version' ${THIS_DIR}/../../node_modules/hermes-engine/package.json)
+#DO_GIT_TAG=${GIT_TAG:-0}
 
 if [[ $THE_MVN_REPO == http* ]]; then
     MVN_HTTP=1
@@ -50,6 +51,20 @@ if [[ $MVN_HTTP == 1 ]]; then
         -DgeneratePom=false \
         -DpomFile=android-jsc-${JSC_VERSION}.pom || true
     popd
+
+#    echo "Pushing Hermes ${HERMES_VERSION} to the Maven repo"
+#    pushd ${THIS_DIR}/../../node_modules/hermes-engine/android/
+#    mvn \
+#        deploy:deploy-file \
+#        -Durl=${MVN_REPO} \
+#        -DrepositoryId=${MVN_REPO_ID} \
+#        -Dfile=hermes-release.aar \
+#        -Dpackaging=aar \
+#        -DgroupId=com.facebook \
+#        -DartifactId=hermes \
+#        -Dversion=${HERMES_VERSION} \
+#        -DgeneratePom=true || true
+#    popd
 else
     # Push React Native, if necessary
     if [[ ! -d ${MVN_REPO}/com/facebook/react/react-native/${RN_VERSION} ]]; then
@@ -79,6 +94,22 @@ else
         popd
     fi
 
+    # Push Hermes, if necessary
+#    if [[ ! -d ${MVN_REPO}/com/facebook/hermes/${HERMES_VERSION} ]]; then
+#        echo "Pushing Hermes ${HERMES_VERSION} to the Maven repo"
+#        pushd ${THIS_DIR}/../../node_modules/hermes-engine/android/
+#        mvn \
+#            deploy:deploy-file \
+#            -Durl=${MVN_REPO} \
+#            -Dfile=hermes-release.aar \
+#            -Dpackaging=aar \
+#            -DgroupId=com.facebook \
+#            -DartifactId=hermes \
+#            -Dversion=${HERMES_VERSION} \
+#            -DgeneratePom=true
+#        popd
+#    fi
+
     # Check if an SDK with that same version has already been released
     if [[ -d ${MVN_REPO}/org/jitsi/react/jitsi-meet-sdk/${SDK_VERSION} ]]; then
         echo "There is already a release with that version in the Maven repo!"
@@ -94,16 +125,16 @@ pushd ${THIS_DIR}/../
 ./gradlew publish
 popd
 
-if [[ $DO_GIT_TAG == 1 ]]; then
-    # The artifacts are now on the Maven repo, commit them
-    pushd ${MVN_REPO_PATH}
-    git add -A .
-    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
-    popd
-
-    # Tag the release
-    git tag android-sdk-${SDK_VERSION}
-fi
+#if [[ $DO_GIT_TAG == 1 ]]; then
+#    # The artifacts are now on the Maven repo, commit them
+#    pushd ${MVN_REPO_PATH}
+#    git add -A .
+#    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
+#    popd
+#
+#    # Tag the release
+#    git tag android-sdk-${SDK_VERSION}
+#fi
 
 # Done!
 echo "Finished! Don't forget to push the tag and the Maven repo artifacts."
