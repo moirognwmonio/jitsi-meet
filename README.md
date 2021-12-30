@@ -21,6 +21,10 @@ $ npm run build-android
 ```
 
 You can also use the defaults release scripts that are provided in {ios || android}/scripts/release-sdk.sh
+```shell
+$ ./ios/scripts/release-sdk.sh
+$ ./android/scripts/release-sdk.sh
+```
 
 # Jitsi Meet - Secure, Simple and Scalable Video Conferences
 
