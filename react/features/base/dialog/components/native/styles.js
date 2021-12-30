@@ -104,21 +104,35 @@ export const brandedDialog = {
         padding: 30
     },
 
+    closeCallVsaleButtonWrapper: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        position: 'absolute',
+        bottom: -2,
+    },
+
     terminateWaitingCallButtonVSale: {
         width: '100%',
         backgroundColor: '#bf2025',
+        borderBottomLeftRadius: BORDER_RADIUS,
+        borderBottomRightRadius: BORDER_RADIUS,
     },
 
     terminateWaitingCallButtonWrapperVSale: {
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingTop: 5,
+        paddingBottom: 5,
     },
 
     waitingMsgVSale: {
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingBottom: 24
     },
 
     overlayTouchable: {

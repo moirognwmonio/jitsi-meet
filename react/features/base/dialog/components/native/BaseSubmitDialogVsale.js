@@ -53,7 +53,7 @@ class BaseSubmitDialogVsale<P: Props, S: *> extends BaseDialogVsale<P, S> {
                 <View style = { brandedDialog.mainWrapper }>
                     { this._renderSubmittable() }
                 </View>
-                <View style = { brandedDialog.buttonWrapper }>
+                <View style = { brandedDialog.closeCallVsaleButtonWrapper }>
                     { additionalButtons }
                 </View>
             </View>
