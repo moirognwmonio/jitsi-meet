@@ -74,9 +74,11 @@ export const brandedDialog = {
     },
 
     buttonWrapper: {
+        width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: BORDER_RADIUS,
+        flexDirection: 'row'
     },
 
     closeWrapper: {
@@ -103,8 +105,8 @@ export const brandedDialog = {
     },
 
     terminateWaitingCallButtonVSale: {
+        width: '100%',
         backgroundColor: '#bf2025',
-        height: 80
     },
 
     terminateWaitingCallButtonWrapperVSale: {
