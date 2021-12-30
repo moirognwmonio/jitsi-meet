@@ -52,20 +52,12 @@ class ConfirmDialogVsale extends BaseSubmitDialogVsale<Props, *> {
      * @inheritdoc
      */
     _renderAdditionalButtons() {
-        const { _dialogStyles } = this.props;
-
         return (
             <TouchableOpacity
                 onPress = { this._onCancel }
-                style = { [
-                    _dialogStyles.button,
-                    _dialogStyles.buttonSeparator,
-                    brandedDialog.terminateWaitingCallButtonVSale
-                ] }>
+                style = { brandedDialog.terminateWaitingCallButtonVSale }>
                 <View style = { brandedDialog.terminateWaitingCallButtonWrapperVSale }>
-                    <Icon
-                        src = { IconHangup }
-                        style = { styles.indicatorIcon } />
+                    <Icon src = { IconHangup } />
                 </View>
             </TouchableOpacity>
         );
