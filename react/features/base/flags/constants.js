@@ -26,6 +26,12 @@ export const AUDIO_MUTE_BUTTON_ENABLED = 'audio-mute.enabled';
 export const AUDIO_ONLY_BUTTON_ENABLED = 'audio-only.enabled';
 
 /**
+ * Flag indicating if screen sharing should be enabled in android.
+ * Default: enabled (true).
+ */
+export const ANDROID_SCREENSHARING_ENABLED = 'android.screensharing.enabled';
+
+/**
  * Flag indicating if calendar integration should be enabled.
  * Default: enabled (true) on Android, auto-detected on iOS.
  */
