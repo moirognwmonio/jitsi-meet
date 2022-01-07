@@ -1,4 +1,4 @@
-# Jitsi Meet Fork - Softhouse Gr
+# Jitsi Meet Fork - Softhouse Gr (v3.6.0)
 
 ## Install dependencies
 
@@ -26,6 +26,58 @@ $ ./ios/scripts/release-sdk.sh
 $ ./android/scripts/release-sdk.sh
 ```
 
+## Publish
+
+1) Copy your artifacts to a repo like the following
+- iOS: [jitsi-meet-ios-sdk-releases](https://github.com/softhouse-gr/jitsi-meet-ios-sdk-releases)
+- Android: [jitsi-maven-repository](https://github.com/softhouse-gr/jitsi-maven-repository)
+
+2) For the iOS you will need to create a release, that will be used in your project like this:
+```
+// In your Podfile, at the end of the file
+pod 'JitsiMeetSDK', :git => 'https://github.com/softhouse-gr/jitsi-meet-ios-sdk-releases.git', :tag => 'your-tag'
+```
+
+3) For the Android you will need just a branch, or the main one, and use it in your project's android/build.gradle
+```shell
+allprojects {
+    repositories {
+        ...
+        mavenLocal()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url("$rootDir/../node_modules/react-native/android")
+        }
+
+        maven {
+            // Custom jitsi meet sdk
+            url "https://github.com/softhouse-gr/jitsi-maven-repository/raw/{your-branch}/releases"
+        }
+
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+        google()
+        jcenter()
+        maven { url 'https://www.jitpack.io' }
+        ...
+    }
+}
+```
+Also similar changes must be made to the 'react-native-jitsi-meet' library you use in the android/build.gradle file like the following:
+```
+...
+repositories {
+  maven {
+      url "https://github.com/softhouse-gr/jitsi-maven-repository/raw/android-sdk-3.6.0-rev-1/releases"
+  }
+  google()
+  mavenCentral()
+  jcenter()
+}
+...
+```
 # Jitsi Meet - Secure, Simple and Scalable Video Conferences
 
 Jitsi Meet is an open-source (Apache) WebRTC JavaScript application that uses [Jitsi Videobridge](https://jitsi.org/videobridge) to provide high quality, [secure](https://jitsi.org/security) and scalable video conferences. Jitsi Meet in action can be seen at [here at the session #482 of the VoIP Users Conference](http://youtu.be/7vFUVClsNh0).
