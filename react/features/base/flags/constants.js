@@ -131,12 +131,6 @@ export const MEETING_NAME_ENABLED = 'meeting-name.enabled';
 export const MEETING_PASSWORD_ENABLED = 'meeting-password.enabled';
 
 /**
- * Flag indicating if more options button is enabled.
- * Default: enabled (true).
- */
-export const MORE_OPTIONS_ENABLED = 'more-options.enabled';
-
-/**
  * Flag indicating if the notifications should be enabled.
  * Default: enabled (true).
  */

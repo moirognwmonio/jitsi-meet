@@ -28,7 +28,6 @@ import RaiseHandButton from './RaiseHandButton';
 import ScreenSharingButton from './ScreenSharingButton.js';
 import ToggleCameraButton from './ToggleCameraButton';
 import styles from './styles';
-import { getFeatureFlag, MORE_OPTIONS_ENABLED } from '../../../base/flags';
 
 /**
  * The type of the React {@code Component} props of {@link OverflowMenu}.
@@ -116,7 +115,6 @@ class OverflowMenu extends PureComponent<Props, State> {
      */
     render() {
         const { _bottomSheetStyles, _width } = this.props;
-        const moreOptionsEnabled = getFeatureFlag(this.state, MORE_OPTIONS_ENABLED, true);
         const { showMore } = this.state;
         const toolbarButtons = getMovableButtons(_width);
 
@@ -129,7 +127,7 @@ class OverflowMenu extends PureComponent<Props, State> {
         const moreOptionsButtonProps = {
             ...buttonProps,
             afterClick: this._onToggleMenu,
-            visible: !showMore && moreOptionsEnabled
+            visible: !showMore
         };
 
         return (
@@ -145,17 +143,17 @@ class OverflowMenu extends PureComponent<Props, State> {
                 <ScreenSharingButton { ...buttonProps } />
                 <MuteEveryoneButton { ...buttonProps } />
                 <MuteEveryonesVideoButton { ...buttonProps } />
-                <MoreOptionsButton { ...moreOptionsButtonProps } />
-                <Collapsible collapsed = { !showMore }>
-                    {!toolbarButtons.has('togglecamera') && <ToggleCameraButton { ...buttonProps } />}
-                    {!toolbarButtons.has('tileview') && <TileViewButton { ...buttonProps } />}
-                    <RecordButton { ...buttonProps } />
-                    <LiveStreamButton { ...buttonProps } />
-                    <SharedVideoButton { ...buttonProps } />
-                    <ClosedCaptionButton { ...buttonProps } />
-                    <SharedDocumentButton { ...buttonProps } />
-                    <HelpButton { ...buttonProps } />
-                </Collapsible>
+                {/*<MoreOptionsButton { ...moreOptionsButtonProps } />*/}
+                {/*<Collapsible collapsed = { !showMore }>*/}
+                {/*    {!toolbarButtons.has('togglecamera') && <ToggleCameraButton { ...buttonProps } />}*/}
+                {/*    {!toolbarButtons.has('tileview') && <TileViewButton { ...buttonProps } />}*/}
+                {/*    <RecordButton { ...buttonProps } />*/}
+                {/*    <LiveStreamButton { ...buttonProps } />*/}
+                {/*    <SharedVideoButton { ...buttonProps } />*/}
+                {/*    <ClosedCaptionButton { ...buttonProps } />*/}
+                {/*    <SharedDocumentButton { ...buttonProps } />*/}
+                {/*    <HelpButton { ...buttonProps } />*/}
+                {/*</Collapsible>*/}
             </BottomSheet>
         );
     }
