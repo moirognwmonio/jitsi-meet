@@ -28,6 +28,7 @@ import RaiseHandButton from './RaiseHandButton';
 import ScreenSharingButton from './ScreenSharingButton.js';
 import ToggleCameraButton from './ToggleCameraButton';
 import styles from './styles';
+import { getFeatureFlag, MORE_OPTIONS_ENABLED } from '../../../base/flags';
 
 /**
  * The type of the React {@code Component} props of {@link OverflowMenu}.
@@ -115,6 +116,7 @@ class OverflowMenu extends PureComponent<Props, State> {
      */
     render() {
         const { _bottomSheetStyles, _width } = this.props;
+        const moreOptionsEnabled = getFeatureFlag(this.state, MORE_OPTIONS_ENABLED, true);
         const { showMore } = this.state;
         const toolbarButtons = getMovableButtons(_width);
 
@@ -127,7 +129,7 @@ class OverflowMenu extends PureComponent<Props, State> {
         const moreOptionsButtonProps = {
             ...buttonProps,
             afterClick: this._onToggleMenu,
-            visible: !showMore
+            visible: !showMore && moreOptionsEnabled
         };
 
         return (
@@ -141,6 +143,8 @@ class OverflowMenu extends PureComponent<Props, State> {
                 {!toolbarButtons.has('raisehand') && <RaiseHandButton { ...buttonProps } />}
                 <SecurityDialogButton { ...buttonProps } />
                 <ScreenSharingButton { ...buttonProps } />
+                <MuteEveryoneButton { ...buttonProps } />
+                <MuteEveryonesVideoButton { ...buttonProps } />
                 <MoreOptionsButton { ...moreOptionsButtonProps } />
                 <Collapsible collapsed = { !showMore }>
                     {!toolbarButtons.has('togglecamera') && <ToggleCameraButton { ...buttonProps } />}
@@ -150,8 +154,6 @@ class OverflowMenu extends PureComponent<Props, State> {
                     <SharedVideoButton { ...buttonProps } />
                     <ClosedCaptionButton { ...buttonProps } />
                     <SharedDocumentButton { ...buttonProps } />
-                    <MuteEveryoneButton { ...buttonProps } />
-                    <MuteEveryonesVideoButton { ...buttonProps } />
                     <HelpButton { ...buttonProps } />
                 </Collapsible>
             </BottomSheet>
