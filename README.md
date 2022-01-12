@@ -1,4 +1,4 @@
-# Jitsi Meet Fork - Softhouse Gr (v3.6.0)
+# Jitsi Meet Fork - Softhouse Gr ([v3.6.0-1](https://github.com/moirognwmonio/jitsi-meet/blob/sdk-3.6.0-mod/CHANGELOG.md))
 
 ## Install dependencies
 
