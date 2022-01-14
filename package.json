@@ -1,6 +1,6 @@
 {
   "name": "jitsi-meet",
-  "version": "0.0.0",
+  "version": "3.6.0-2",
   "description": "A sample app for the Jitsi Videobridge",
   "engines": {
     "node": ">=14.0.0",

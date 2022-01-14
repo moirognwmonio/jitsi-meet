@@ -43,7 +43,7 @@ export function getMovableButtons(width: number): Set<string> {
     }
 
     default: {
-        buttons = [ 'chat' ];
+        buttons = [ 'togglecamera' ];
     }
     }
 

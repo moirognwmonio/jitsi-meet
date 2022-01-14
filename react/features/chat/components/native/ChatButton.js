@@ -9,6 +9,7 @@ import {
 } from '../../../base/toolbox/components';
 import { openChat } from '../../actions.native';
 import { getUnreadCount } from '../../functions';
+import { translate } from '../../../base/i18n';
 
 type Props = AbstractButtonProps & {
 
@@ -67,4 +68,4 @@ function _mapStateToProps(state, ownProps) {
     };
 }
 
-export default connect(_mapStateToProps)(ChatButton);
+export default translate(connect(_mapStateToProps)(ChatButton));

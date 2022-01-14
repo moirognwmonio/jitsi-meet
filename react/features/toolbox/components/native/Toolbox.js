@@ -81,6 +81,10 @@ function Toolbox(props: Props) {
                 <VideoMuteButton
                     styles = { buttonStylesBorderless }
                     toggledStyles = { toggledButtonStyles } />
+                {additionalButtons.has('togglecamera')
+                      && <ToggleCameraButton
+                          styles = { buttonStylesBorderless }
+                          toggledStyles = { backgroundToggledStyle } />}
                 { additionalButtons.has('chat')
                       && <ChatButton
                           styles = { buttonStylesBorderless }
@@ -92,10 +96,6 @@ function Toolbox(props: Props) {
                           toggledStyles = { backgroundToggledStyle } />}
                 {additionalButtons.has('tileview') && <TileViewButton styles = { buttonStylesBorderless } />}
                 {additionalButtons.has('invite') && <InviteButton styles = { buttonStylesBorderless } />}
-                {additionalButtons.has('togglecamera')
-                      && <ToggleCameraButton
-                          styles = { buttonStylesBorderless }
-                          toggledStyles = { backgroundToggledStyle } />}
                 <OverflowMenuButton
                     styles = { buttonStylesBorderless }
                     toggledStyles = { toggledButtonStyles } />
