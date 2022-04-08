@@ -2,33 +2,35 @@
 
 import React, { PureComponent } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import Collapsible from 'react-native-collapsible';
 
 import { ColorSchemeRegistry } from '../../../base/color-scheme';
 import { BottomSheet, hideDialog, isDialogOpen } from '../../../base/dialog';
 import { IconDragHandle } from '../../../base/icons';
 import { connect } from '../../../base/redux';
 import { StyleType } from '../../../base/styles';
-import { SharedDocumentButton } from '../../../etherpad';
+import ChatButton from '../../../chat/components/native/ChatButton';
 import { InviteButton } from '../../../invite';
 import { AudioRouteButton } from '../../../mobile/audio-mode';
-import { LiveStreamButton, RecordButton } from '../../../recording';
 import SecurityDialogButton from '../../../security/components/security-dialog/SecurityDialogButton';
-import { SharedVideoButton } from '../../../shared-video/components';
-import { ClosedCaptionButton } from '../../../subtitles';
-import { TileViewButton } from '../../../video-layout';
 import { getMovableButtons } from '../../functions.native';
-import HelpButton from '../HelpButton';
 import MuteEveryoneButton from '../MuteEveryoneButton';
 import MuteEveryonesVideoButton from '../MuteEveryonesVideoButton';
 
 import AudioOnlyButton from './AudioOnlyButton';
-import MoreOptionsButton from './MoreOptionsButton';
 import RaiseHandButton from './RaiseHandButton';
 import ScreenSharingButton from './ScreenSharingButton.js';
 import ToggleCameraButton from './ToggleCameraButton';
 import styles from './styles';
-import ChatButton from '../../../chat/components/native/ChatButton';
+
+// import Collapsible from 'react-native-collapsible';
+// import { SharedDocumentButton } from '../../../etherpad';
+// import { LiveStreamButton, RecordButton } from '../../../recording';
+// import { SharedVideoButton } from '../../../shared-video/components';
+// import { ClosedCaptionButton } from '../../../subtitles';
+// import { TileViewButton } from '../../../video-layout';
+// import HelpButton from '../HelpButton';
+// import MoreOptionsButton from './MoreOptionsButton';
+
 
 /**
  * The type of the React {@code Component} props of {@link OverflowMenu}.
@@ -116,7 +118,8 @@ class OverflowMenu extends PureComponent<Props, State> {
      */
     render() {
         const { _bottomSheetStyles, _width } = this.props;
-        const { showMore } = this.state;
+
+        // const { showMore } = this.state;
         const toolbarButtons = getMovableButtons(_width);
 
         const buttonProps = {
@@ -125,11 +128,11 @@ class OverflowMenu extends PureComponent<Props, State> {
             styles: _bottomSheetStyles.buttons
         };
 
-        const moreOptionsButtonProps = {
-            ...buttonProps,
-            afterClick: this._onToggleMenu,
-            visible: !showMore
-        };
+        // const moreOptionsButtonProps = {
+        //     ...buttonProps,
+        //     afterClick: this._onToggleMenu,
+        //     visible: !showMore
+        // };
 
         return (
             <BottomSheet
@@ -146,8 +149,8 @@ class OverflowMenu extends PureComponent<Props, State> {
                 <ScreenSharingButton { ...buttonProps } />
                 <MuteEveryoneButton { ...buttonProps } />
                 <MuteEveryonesVideoButton { ...buttonProps } />
-                {/*<MoreOptionsButton { ...moreOptionsButtonProps } />*/}
-                {/*<Collapsible collapsed = { !showMore }>*/}
+                {/* <MoreOptionsButton { ...moreOptionsButtonProps } />*/}
+                {/* <Collapsible collapsed = { !showMore }>*/}
                 {/*    {!toolbarButtons.has('tileview') && <TileViewButton { ...buttonProps } />}*/}
                 {/*    <RecordButton { ...buttonProps } />*/}
                 {/*    <LiveStreamButton { ...buttonProps } />*/}
@@ -155,7 +158,7 @@ class OverflowMenu extends PureComponent<Props, State> {
                 {/*    <ClosedCaptionButton { ...buttonProps } />*/}
                 {/*    <SharedDocumentButton { ...buttonProps } />*/}
                 {/*    <HelpButton { ...buttonProps } />*/}
-                {/*</Collapsible>*/}
+                {/* </Collapsible>*/}
             </BottomSheet>
         );
     }
