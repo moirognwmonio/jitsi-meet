@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.6.0-3]
+
+### Fixed
+
+- Delete unneeded iOS permission local network access. When dialog is presented the user's video feed will not work until the next videocall.
+
 ## [3.6.0-2] (14/02/2022)
 
 ### Features
